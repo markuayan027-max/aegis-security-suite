@@ -1,0 +1,22 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api"
+    },
+    {
+      "source": "/public/(.*)",
+      "destination": "/$1"
+    },
+    {
+      "source": "/react",
+      "destination": "/replit"
+    },
+    {
+      "source": "/suite",
+      "destination": "/replit"
+    }
+  ]
+}

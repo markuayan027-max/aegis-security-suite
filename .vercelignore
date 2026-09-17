@@ -1,0 +1,13 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Created: 2026-09-17 | Purpose: Vercel deployment exclusions
+# Last verified with: Vercel CLI 54.14+
+# ─────────────────────────────────────────────────────────────────────────────
+
+replit-suite
+node_modules
+.git
+.agents
+tests
+Dockerfile
+docker-compose.yml
+*.log

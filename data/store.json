@@ -1,0 +1,553 @@
+{
+  "activeEventId": "evt-101",
+  "emergencyHotlines": [
+    {
+      "id": "hl-1",
+      "agencyName": "National Emergency Hotline",
+      "shortCode": "911",
+      "primaryPhone": "911",
+      "secondaryPhone": null,
+      "radioFreq": null,
+      "category": "NATIONAL",
+      "description": "Universal emergency number — connects to police, fire, or ambulance.",
+      "priorityOrder": 1,
+      "isActive": true
+    },
+    {
+      "id": "hl-2",
+      "agencyName": "Bureau of Fire Protection (BFP)",
+      "shortCode": "160",
+      "primaryPhone": "160",
+      "secondaryPhone": "(02) 8426-0246",
+      "radioFreq": "154.070 MHz",
+      "category": "FIRE_RESCUE",
+      "description": "Fire suppression, technical rescue, extrication, and hazmat.",
+      "priorityOrder": 2,
+      "isActive": true
+    },
+    {
+      "id": "hl-3",
+      "agencyName": "Philippine Red Cross Emergency Line",
+      "shortCode": "143",
+      "primaryPhone": "143",
+      "secondaryPhone": "(02) 8527-8385",
+      "radioFreq": null,
+      "category": "MEDICAL_EMS",
+      "description": "Ambulance, advanced life support, and mass casualty triage.",
+      "priorityOrder": 3,
+      "isActive": true
+    },
+    {
+      "id": "hl-4",
+      "agencyName": "Philippine National Police (PNP)",
+      "shortCode": "117",
+      "primaryPhone": "117",
+      "secondaryPhone": "(02) 8722-0650",
+      "radioFreq": "159.725 MHz",
+      "category": "POLICE_SECURITY",
+      "description": "Criminal incident response, crowd control, campus lockdown support.",
+      "priorityOrder": 4,
+      "isActive": true
+    },
+    {
+      "id": "hl-5",
+      "agencyName": "NDRRMC / CDRRMO Operations Center",
+      "shortCode": "NDRRMC",
+      "primaryPhone": "(02) 8911-5061",
+      "secondaryPhone": "(02) 8912-2665",
+      "radioFreq": "142.200 MHz",
+      "category": "DISASTER_RESCUE",
+      "description": "Disaster risk reduction — floods, earthquakes, typhoon, structural collapse.",
+      "priorityOrder": 5,
+      "isActive": true
+    },
+    {
+      "id": "hl-6",
+      "agencyName": "Campus Security Tactical Desk",
+      "shortCode": "TAC-DESK",
+      "primaryPhone": "local 1001",
+      "secondaryPhone": "local 1002",
+      "radioFreq": "TAC-1 (462.5625 MHz)",
+      "category": "CAMPUS_INTERNAL",
+      "description": "On-site Aegis command desk. First internal escalation point.",
+      "priorityOrder": 6,
+      "isActive": true
+    },
+    {
+      "id": "hl-7",
+      "agencyName": "Campus Health & Medical Clinic",
+      "shortCode": "CLINIC",
+      "primaryPhone": "local 1200",
+      "secondaryPhone": "local 1201",
+      "radioFreq": null,
+      "category": "CAMPUS_INTERNAL",
+      "description": "Medical first aid, injury triage, and ambulance coordination.",
+      "priorityOrder": 7,
+      "isActive": true
+    }
+  ],
+  "deptLeaders": [
+    {
+      "id": "dl-1",
+      "displayName": "Leader Ana Reyes",
+      "department": "College of Nursing",
+      "sectionName": "BSN 3-B",
+      "phone": "0917-111-0001",
+      "email": "areyes@campus.edu",
+      "accessCode": "NURSE-SEC-01",
+      "isActive": true
+    },
+    {
+      "id": "dl-2",
+      "displayName": "Leader Mark Bautista",
+      "department": "College of Engineering",
+      "sectionName": "BSCE 2-A",
+      "phone": "0917-111-0002",
+      "email": "mbautista@campus.edu",
+      "accessCode": "ENGR-SEC-01",
+      "isActive": true
+    },
+    {
+      "id": "dl-3",
+      "displayName": "Leader Carla Domingo",
+      "department": "College of Education",
+      "sectionName": "BSED 3-A",
+      "phone": "0917-111-0003",
+      "email": "cdomingo@campus.edu",
+      "accessCode": "EDUC-SEC-01",
+      "isActive": true
+    }
+  ],
+  "adminAccounts": [
+    {
+      "username": "admin@aegis.tactical",
+      "passkey": "SEC-ADMIN-2026",
+      "role": "SUPER_ADMIN",
+      "displayName": "Commander Inspector Ramirez"
+    }
+  ],
+  "events": [
+    {
+      "id": "evt-101",
+      "eventCode": "EVT-2026-TAC1",
+      "title": "Annual Criminology Agility & Field Security Drill",
+      "eventType": "TACTICAL_DRILL",
+      "location": "Main Quad & Perimeter Gates",
+      "date": "2026-09-16",
+      "status": "ACTIVE",
+      "totalStudentsEnrolled": 4,
+      "mandatoryShifts": [
+        "AM_IN",
+        "AM_OUT",
+        "PM_IN",
+        "PM_OUT"
+      ]
+    },
+    {
+      "id": "evt-102",
+      "eventCode": "EVT-2026-RESC",
+      "title": "Disaster Search & Extrication Simulation",
+      "eventType": "RESCUE_SIMULATION",
+      "location": "Athletic Arena & East Bleachers",
+      "date": "2026-09-16",
+      "status": "ACTIVE",
+      "totalStudentsEnrolled": 3,
+      "mandatoryShifts": [
+        "AM_IN",
+        "PM_OUT"
+      ]
+    },
+    {
+      "id": "evt-103",
+      "eventCode": "EVT-2026-INTRA",
+      "title": "University Intramurals Opening Gate Control",
+      "eventType": "CAMPUS_SECURITY",
+      "location": "North & South Access Checkpoints",
+      "date": "2026-09-18",
+      "status": "SCHEDULED",
+      "totalStudentsEnrolled": 4,
+      "mandatoryShifts": [
+        "AM_IN",
+        "AM_OUT",
+        "PM_IN",
+        "PM_OUT"
+      ]
+    }
+  ],
+  "studentCompliance": [
+    {
+      "studentId": "m-101",
+      "eventId": "evt-101",
+      "amIn": "12:34 PM",
+      "amOut": "11:58 AM",
+      "pmIn": "01:15 PM",
+      "pmOut": null,
+      "status": "IN_PROGRESS"
+    },
+    {
+      "studentId": "m-102",
+      "eventId": "evt-101",
+      "amIn": "07:55 AM",
+      "amOut": "12:02 PM",
+      "pmIn": "01:28 PM",
+      "pmOut": "05:32 PM",
+      "status": "COMPLIANT"
+    },
+    {
+      "studentId": "m-103",
+      "eventId": "evt-101",
+      "amIn": "08:18 AM",
+      "amOut": null,
+      "pmIn": null,
+      "pmOut": null,
+      "status": "LATE"
+    },
+    {
+      "studentId": "m-104",
+      "eventId": "evt-101",
+      "amIn": null,
+      "amOut": null,
+      "pmIn": null,
+      "pmOut": null,
+      "status": "ABSENT"
+    }
+  ],
+  "tacticalUnits": [
+    {
+      "id": "u-101",
+      "unitNumber": 1,
+      "callsign": "Alpha Rapid Rescue",
+      "patrolSector": "Sector 1 - North Perimeter & Gates",
+      "minRescueRequired": 1,
+      "isDeployed": true,
+      "createdAt": "2026-09-17T04:33:47.868Z"
+    },
+    {
+      "id": "u-102",
+      "unitNumber": 2,
+      "callsign": "Bravo Extrication & Medical",
+      "patrolSector": "Sector 2 - Central Quad & Event Arena",
+      "minRescueRequired": 1,
+      "isDeployed": false,
+      "createdAt": "2026-09-17T04:33:47.869Z"
+    },
+    {
+      "id": "u-103",
+      "unitNumber": 3,
+      "callsign": "Charlie Incident Command",
+      "patrolSector": "Sector 3 - South Evacuation Corridor",
+      "minRescueRequired": 1,
+      "isDeployed": false,
+      "createdAt": "2026-09-17T04:33:47.869Z"
+    }
+  ],
+  "members": [
+    {
+      "id": "m-101",
+      "identifierCode": "STU-0801",
+      "studentIdNumber": "2026-CRIM-0801",
+      "displayName": "Cadet Ronald Ramos",
+      "memberType": "STUDENT",
+      "sectionName": "BS-CRIM 3-A",
+      "department": "College of Criminology",
+      "roleTitle": "Student Cadet",
+      "physicalRating": 4,
+      "isRescueCertified": true,
+      "specialties": [
+        "PATROL",
+        "FIRST_AID"
+      ],
+      "phone": "0917-555-0101",
+      "radioChannel": "TAC-1",
+      "dutyStation": "Gate North / Kiosk A",
+      "assignedUnitId": "u-101",
+      "dutyStatus": "OFF_DUTY"
+    },
+    {
+      "id": "m-102",
+      "identifierCode": "STU-0802",
+      "studentIdNumber": "2026-CRIM-0802",
+      "displayName": "Cadet Nicole Santos",
+      "memberType": "STUDENT",
+      "sectionName": "BS-CRIM 3-A",
+      "department": "College of Criminology",
+      "roleTitle": "Student Cadet",
+      "physicalRating": 3,
+      "isRescueCertified": false,
+      "specialties": [
+        "PATROL"
+      ],
+      "phone": "0917-555-0102",
+      "radioChannel": "TAC-1",
+      "dutyStation": "Central Quad / Kiosk B",
+      "assignedUnitId": "u-101",
+      "dutyStatus": "ON_DUTY"
+    },
+    {
+      "id": "m-103",
+      "identifierCode": "STU-0803",
+      "studentIdNumber": "2026-CRIM-0803",
+      "displayName": "Cadet Kevin Bautista",
+      "memberType": "STUDENT",
+      "sectionName": "BS-CRIM 3-B",
+      "department": "College of Criminology",
+      "roleTitle": "Student Cadet",
+      "physicalRating": 5,
+      "isRescueCertified": true,
+      "specialties": [
+        "HEAVY_RESCUE",
+        "EXTRICATION"
+      ],
+      "phone": "0917-555-0103",
+      "radioChannel": "TAC-2",
+      "dutyStation": "Athletic Arena / East Bleachers",
+      "assignedUnitId": "u-102",
+      "dutyStatus": "ON_DUTY"
+    },
+    {
+      "id": "m-104",
+      "identifierCode": "STU-0804",
+      "studentIdNumber": "2026-CRIM-0804",
+      "displayName": "Cadet Bea Alcantara",
+      "memberType": "STUDENT",
+      "sectionName": "BS-CRIM 3-B",
+      "department": "College of Criminology",
+      "roleTitle": "Student Cadet",
+      "physicalRating": 3,
+      "isRescueCertified": false,
+      "specialties": [
+        "PATROL"
+      ],
+      "phone": "0917-555-0104",
+      "radioChannel": "TAC-1",
+      "dutyStation": "South Gate / Standby Post",
+      "assignedUnitId": "u-102",
+      "dutyStatus": "OFF_DUTY"
+    },
+    {
+      "id": "m-1",
+      "identifierCode": "CADET-7701",
+      "studentIdNumber": "2024-OFFICER-01",
+      "displayName": "Officer Marcus Vance",
+      "memberType": "OFFICER",
+      "sectionName": "Tactical Officers",
+      "department": "Criminology Tactical Squad",
+      "roleTitle": "Squad Lead / Heavy Rescue",
+      "physicalRating": 5,
+      "isRescueCertified": true,
+      "specialties": [
+        "HEAVY_RESCUE",
+        "EXTRICATION",
+        "TACTICAL_BREACHING"
+      ],
+      "phone": "0917-777-0001",
+      "radioChannel": "TAC-CMD",
+      "dutyStation": "Command Post Alpha",
+      "assignedUnitId": "u-103",
+      "dutyStatus": "ON_DUTY"
+    },
+    {
+      "id": "m-2",
+      "identifierCode": "CADET-7702",
+      "displayName": "Cadet Elena Rostova",
+      "department": "Criminology Tactical Squad",
+      "roleTitle": "Trauma Medic / Tactical EMT",
+      "physicalRating": 4,
+      "isRescueCertified": true,
+      "specialties": [
+        "TRAUMA_FIRST_AID",
+        "WATER_RESCUE",
+        "TRIAGE"
+      ],
+      "phone": "0917-777-0002",
+      "radioChannel": "MED-1",
+      "dutyStation": "Field Medical Station Bravo",
+      "assignedUnitId": "u-101",
+      "dutyStatus": "ON_DUTY"
+    },
+    {
+      "id": "m-3",
+      "identifierCode": "CADET-7703",
+      "displayName": "Cadet Mateo Cruz",
+      "department": "Security & Crowd Control",
+      "roleTitle": "Perimeter Observer",
+      "physicalRating": 3,
+      "isRescueCertified": false,
+      "specialties": [
+        "CROWD_CONTROL",
+        "PATROL"
+      ],
+      "phone": "0917-777-0003",
+      "radioChannel": "TAC-1",
+      "dutyStation": "North Perimeter / Gate 1",
+      "assignedUnitId": "u-103",
+      "dutyStatus": "ON_DUTY"
+    },
+    {
+      "id": "m-4",
+      "identifierCode": "CADET-7704",
+      "displayName": "Cadet Samuel Kim",
+      "department": "Communications & Surveillance",
+      "roleTitle": "Radio Dispatcher",
+      "physicalRating": 2,
+      "isRescueCertified": false,
+      "specialties": [
+        "COMMS",
+        "DISPATCH"
+      ],
+      "phone": "0917-777-0004",
+      "radioChannel": "OPS-1",
+      "dutyStation": "Tactical Radio Room",
+      "assignedUnitId": "u-101",
+      "dutyStatus": "ON_DUTY"
+    },
+    {
+      "id": "m-5",
+      "identifierCode": "CADET-7705",
+      "displayName": "Cadet Jaxson Miller",
+      "department": "Criminology Tactical Squad",
+      "roleTitle": "Heavy Extrication Specialist",
+      "physicalRating": 5,
+      "isRescueCertified": true,
+      "specialties": [
+        "HEAVY_RESCUE",
+        "HIGH_ANGLE_ROPES",
+        "LIFESAVING"
+      ],
+      "phone": "0917-777-0005",
+      "radioChannel": "TAC-2",
+      "dutyStation": "South Evacuation Corridor",
+      "assignedUnitId": "u-102",
+      "dutyStatus": "STANDBY"
+    },
+    {
+      "id": "m-6",
+      "identifierCode": "CADET-7706",
+      "displayName": "Cadet David O'Connor",
+      "department": "Security & Crowd Control",
+      "roleTitle": "Perimeter Marshal",
+      "physicalRating": 3,
+      "isRescueCertified": false,
+      "specialties": [
+        "PATROL",
+        "ACCESS_CONTROL"
+      ],
+      "phone": "0917-777-0006",
+      "radioChannel": "TAC-1",
+      "dutyStation": "South Access Checkpoint",
+      "assignedUnitId": "u-102",
+      "dutyStatus": "STANDBY"
+    }
+  ],
+  "attendanceLogs": [
+    {
+      "id": "att-1789619685334",
+      "memberId": "m-101",
+      "displayName": "Cadet Ronald Ramos",
+      "identifierCode": "STU-0801",
+      "shiftType": "AM_IN",
+      "eventType": "TACTICAL_DRILL",
+      "verificationMethod": "QR_CODE",
+      "verificationLatencyMs": 42,
+      "terminalCode": "KIOSK-MAIN-SEC",
+      "loggedAt": "2026-09-17T04:34:45.334Z"
+    },
+    {
+      "id": "att-001",
+      "memberId": "m-1",
+      "displayName": "Officer Marcus Vance",
+      "identifierCode": "CADET-7701",
+      "eventType": "CHECK_IN",
+      "verificationMethod": "EDGE_VECTOR",
+      "verificationLatencyMs": 142,
+      "terminalCode": "KIOSK-GATE-NORTH",
+      "loggedAt": "2026-09-17T03:33:47.869Z"
+    },
+    {
+      "id": "att-002",
+      "memberId": "m-2",
+      "displayName": "Cadet Elena Rostova",
+      "identifierCode": "CADET-7702",
+      "eventType": "CHECK_IN",
+      "verificationMethod": "ENCRYPTED_BADGE",
+      "verificationLatencyMs": 98,
+      "terminalCode": "KIOSK-GATE-NORTH",
+      "loggedAt": "2026-09-17T03:37:07.869Z"
+    }
+  ],
+  "anonymousReports": [
+    {
+      "id": "rep-1789619706322",
+      "referenceCode": "REF-VEZDCZ",
+      "reporterType": "ANONYMOUS_CIVILIAN",
+      "reporterName": null,
+      "reporterContact": null,
+      "reporterDepartment": null,
+      "reporterSection": null,
+      "whoInvolved": "Unknown",
+      "whoUnknown": true,
+      "whatHappened": "Cadet sustained a severe ankle sprain during the obstacle agility run",
+      "whereLocation": "Gymnasium Bleachers Section B",
+      "whenOccurred": "2026-09-17T04:35:06.282Z",
+      "whyHowDetails": "Uneven landing caused inversion injury requiring immediate ice and splinting",
+      "message": "Cadet sustained a severe ankle sprain during the obstacle agility run",
+      "locationHint": "Gymnasium Bleachers Section B",
+      "category": "MEDICAL",
+      "urgency": "MEDIUM",
+      "hasLivePhoto": false,
+      "photoHash": null,
+      "noPhotoReason": "Immediate medical attention required",
+      "isAnonymous": true,
+      "verificationStatus": "UNVERIFIED",
+      "coordinates": null,
+      "mapUrl": null,
+      "status": "OPEN",
+      "assignedUnitId": null,
+      "govEscalationStatus": "NONE",
+      "govAgencyName": null,
+      "govDossierCode": null,
+      "govEscalatedAt": null,
+      "govOperatorNotes": null,
+      "adminNotes": null,
+      "resolutionDetails": null,
+      "respondedBy": null,
+      "respondedAt": null,
+      "createdAt": "2026-09-17T04:35:06.323Z",
+      "updatedAt": "2026-09-17T04:35:06.323Z"
+    },
+    {
+      "id": "rep-001",
+      "referenceCode": "REF-9A4B2C",
+      "category": "EMERGENCY_RESCUE",
+      "urgency": "CRITICAL",
+      "message": "Scaffolding collapse near East Bleachers. Civilian trapped under debris, needs immediate extrication team!",
+      "locationHint": "East Bleachers, Sector 2",
+      "isAnonymous": true,
+      "status": "DISPATCHED",
+      "assignedUnitId": "u-102",
+      "adminNotes": "Dispatched Bravo Medical & Rescue at 06:15. Extrication unit en route.",
+      "resolutionDetails": "Unit 2 deployed with hydraulic spreaders and EMT kit.",
+      "respondedBy": "Admin / Dispatch Commander",
+      "respondedAt": "2026-09-17T04:18:47.869Z",
+      "createdAt": "2026-09-17T04:13:47.869Z",
+      "updatedAt": "2026-09-17T04:18:47.869Z"
+    },
+    {
+      "id": "rep-002",
+      "referenceCode": "REF-4K8M1P",
+      "category": "SUSPICIOUS_PERSON",
+      "urgency": "MEDIUM",
+      "message": "Unattended black duffel bag spotted behind Gate 4 transformer box.",
+      "locationHint": "Gate 4, Sector 1",
+      "isAnonymous": true,
+      "status": "OPEN",
+      "assignedUnitId": null,
+      "adminNotes": null,
+      "resolutionDetails": null,
+      "respondedBy": null,
+      "respondedAt": null,
+      "createdAt": "2026-09-17T04:27:07.869Z",
+      "updatedAt": "2026-09-17T04:27:07.869Z"
+    }
+  ]
+}

@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Aegis Cadet | Friendly Community & Officer Mesh</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0B0F17;
+      --card-bg: #141A24;
+      --card-inner: #1B2332;
+      --border: rgba(255, 255, 255, 0.08);
+      
+      --text-main: #F8FAFC;
+      --text-muted: #94A3B8;
+      
+      --primary: #38BDF8;
+      --primary-soft: rgba(56, 189, 248, 0.12);
+      
+      --emergency-red: #F87171;
+      --emergency-bg: rgba(239, 68, 68, 0.14);
+      --warning-amber: #FBBF24;
+      --warning-bg: rgba(245, 158, 11, 0.14);
+      --success-green: #34D399;
+      --success-bg: rgba(52, 211, 153, 0.14);
+      
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text-main);
+      padding: 0.85rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    /* Top App Header */
+    .app-header {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 0.85rem 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.85rem;
+    }
+
+    .app-title-group {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .app-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: var(--card-inner);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+    }
+
+    .app-name {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #FFF;
+      letter-spacing: -0.01em;
+    }
+
+    .app-sub {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0.35rem 0.75rem;
+      background: var(--success-bg);
+      border: 1px solid rgba(52, 211, 153, 0.25);
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--success-green);
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--success-green);
+      box-shadow: 0 0 8px rgba(52, 211, 153, 0.8);
+      animation: pulseDot 2s infinite;
+    }
+
+    @keyframes pulseDot {
+      0%, 100% { opacity: 0.5; transform: scale(0.95); }
+      50% { opacity: 1; transform: scale(1.15); }
+    }
+
+    /* Role Switcher (Clear and Big) */
+    .role-bar {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 0.65rem 0.95rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.85rem;
+    }
+
+    .role-label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .role-dropdown {
+      background: var(--card-inner);
+      border: 1px solid var(--border);
+      color: #FFF;
+      padding: 0.45rem 0.75rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.82rem;
+      font-weight: 600;
+      outline: none;
+    }
+
+    /* Emergency Alert Floating Card */
+    .backup-alert-banner {
+      background: var(--emergency-bg);
+      border: 1.5px solid var(--emergency-red);
+      border-radius: var(--radius-md);
+      padding: 0.85rem 1rem;
+      margin-bottom: 0.85rem;
+      display: none;
+      box-shadow: 0 4px 20px rgba(239, 68, 68, 0.25);
+      animation: backupBounce 1.5s infinite;
+    }
+
+    .backup-alert-banner.active {
+      display: block;
+    }
+
+    @keyframes backupBounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-2px); }
+    }
+
+    .alert-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: var(--emergency-red);
+      margin-bottom: 0.25rem;
+    }
+
+    .alert-body {
+      font-size: 0.78rem;
+      color: #FECACA;
+      line-height: 1.35;
+    }
+
+    /* Tab Switcher for Clean Friendly Navigation */
+    .nav-tabs {
+      display: flex;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 0.3rem;
+      margin-bottom: 0.85rem;
+      gap: 0.35rem;
+    }
+
+    .tab-btn {
+      flex: 1;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      padding: 0.6rem 0.5rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .tab-btn.active {
+      background: var(--card-inner);
+      color: #FFF;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    }
+
+    .tab-count {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 0.1rem 0.45rem;
+      border-radius: 999px;
+      font-size: 0.7rem;
+    }
+
+    /* Views */
+    .tab-view { display: none; }
+    .tab-view.active { display: block; }
+
+    /* Incident Feed Cards */
+    .incident-feed {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .incident-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      position: relative;
+    }
+
+    .incident-card.critical { border-left: 5px solid var(--emergency-red); }
+    .incident-card.urgent { border-left: 5px solid var(--warning-amber); }
+    .incident-card.resolved { border-left: 5px solid var(--success-green); opacity: 0.7; }
+    .incident-card.sos-active {
+      border: 2px solid var(--emergency-red);
+      background: #1C151B;
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .location-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #FFF;
+    }
+
+    .time-stamp {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .card-description {
+      font-size: 0.85rem;
+      color: #CBD5E1;
+      line-height: 1.4;
+    }
+
+    /* Friendly Status Pill Inside Card */
+    .card-meta-box {
+      background: var(--card-inner);
+      border-radius: var(--radius-sm);
+      padding: 0.65rem 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.78rem;
+    }
+
+    .officer-assigned-name {
+      font-weight: 600;
+      color: #FFF;
+    }
+
+    .state-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+    }
+
+    .state-UNASSIGNED { background: var(--warning-bg); color: var(--warning-amber); }
+    .state-RESPONDING { background: var(--primary-soft); color: var(--primary); }
+    .state-BACKUP { background: var(--emergency-bg); color: var(--emergency-red); }
+    .state-RESOLVED { background: var(--success-bg); color: var(--success-green); }
+
+    /* Friendly Action Buttons */
+    .action-group {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .action-btn {
+      flex: 1;
+      padding: 0.75rem 0.5rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: 1px solid transparent;
+      transition: all 0.15s ease;
+    }
+
+    .btn-respond {
+      background: #2563EB;
+      color: #FFF;
+    }
+    .btn-respond:hover { background: #1D4ED8; }
+
+    .btn-backup {
+      background: var(--emergency-bg);
+      border-color: var(--emergency-red);
+      color: var(--emergency-red);
+    }
+    .btn-backup:hover { background: rgba(239, 68, 68, 0.25); }
+
+    .btn-handled {
+      background: var(--success-bg);
+      border-color: var(--success-green);
+      color: var(--success-green);
+    }
+    .btn-handled:hover { background: rgba(52, 211, 153, 0.25); }
+
+    /* Friendly Quick 1-Tap Civilian Reporter View */
+    .civilian-report-container {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .help-intro {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .step-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #FFF;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .location-pills {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.5rem;
+    }
+
+    .loc-btn {
+      background: var(--card-inner);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 0.65rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: left;
+    }
+    .loc-btn.selected {
+      background: #1E3A8A;
+      border-color: var(--primary);
+      color: #FFF;
+    }
+
+    .incident-type-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.65rem;
+    }
+
+    .incident-tap-btn {
+      background: var(--card-inner);
+      border: 1px solid var(--border);
+      color: #FFF;
+      padding: 0.95rem 0.75rem;
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      align-items: flex-start;
+      text-align: left;
+    }
+    .incident-tap-btn:hover {
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .incident-tap-btn span.sub {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    /* Notification Toast */
+    .toast {
+      position: fixed;
+      bottom: 1.25rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #1E293B;
+      border: 1px solid var(--border);
+      color: #FFF;
+      padding: 0.65rem 1.1rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      transition: transform 0.25s ease;
+      z-index: 100;
+      pointer-events: none;
+    }
+    .toast.visible {
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- App Header -->
+  <header class="app-header">
+    <div class="app-title-group">
+      <div class="app-icon">🛡️</div>
+      <div>
+        <h1 class="app-name">Aegis Mesh</h1>
+        <p class="app-sub">Criminology Safety & Dispatch</p>
+      </div>
+    </div>
+    <div class="status-pill">
+      <span class="status-dot"></span>
+      <span>0-Data Mesh</span>
+    </div>
+  </header>
+
+  <!-- Friendly Call-Sign Selector -->
+  <section class="role-bar">
+    <span class="role-label">Your Active Profile:</span>
+    <select class="role-dropdown" id="userRole" onchange="showToast('Profile changed to ' + this.value)">
+      <option value="Cadet Officer Cruz (Gate 1)">Cadet Officer Cruz (Gate 1)</option>
+      <option value="Cadet Diaz (Medical Triage)">Cadet Diaz (Medical Triage)</option>
+      <option value="Cadet Ramos (Roving Patrol)">Cadet Ramos (Roving Patrol)</option>
+      <option value="Volunteer Marshal (Bleachers)">Volunteer Marshal (Bleachers)</option>
+    </select>
+  </section>
+
+  <!-- Emergency Flash Banner for Backup -->
+  <div class="backup-alert-banner" id="backupAlertBanner">
+    <div class="alert-header">
+      <span>🚨</span>
+      <span>URGENT: OFFICER CALLING FOR BACKUP!</span>
+    </div>
+    <div class="alert-body" id="backupAlertText">
+      Officer Cruz needs immediate support at Gate 1 Main Entrance!
+    </div>
+  </div>
+
+  <!-- Friendly Navigation Tabs -->
+  <nav class="nav-tabs">
+    <button class="tab-btn active" id="tabLiveBtn" onclick="switchTab('live')">
+      <span>📋 Live Feed</span>
+      <span class="tab-count" id="activeCount">2</span>
+    </button>
+    <button class="tab-btn" id="tabReportBtn" onclick="switchTab('report')">
+      <span>🚨 Report Problem</span>
+    </button>
+  </nav>
+
+  <!-- TAB 1: Live Feed View (For All Officers & Civilians) -->
+  <main class="tab-view active" id="liveView">
+    <div class="incident-feed" id="feedContainer"></div>
+  </main>
+
+  <!-- TAB 2: Super Friendly 1-Tap Civilian Reporting View -->
+  <section class="tab-view" id="reportView">
+    <div class="civilian-report-container">
+      <div>
+        <h2 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.25rem;">Report an Incident Fast</h2>
+        <p class="help-intro">No mobile data needed. Choose your location, then tap the problem to alert all on-duty officers immediately.</p>
+      </div>
+
+      <div>
+        <div class="step-title" style="margin-bottom: 0.45rem;">Step 1: Where are you?</div>
+        <div class="location-pills">
+          <button class="loc-btn selected" onclick="selectLocation(this, 'Gate 1 (North)')">📍 Gate 1 (North)</button>
+          <button class="loc-btn" onclick="selectLocation(this, 'Grandstand / Bleachers')">📍 Bleachers</button>
+          <button class="loc-btn" onclick="selectLocation(this, 'Gymnasium Stage')">📍 Gym Stage</button>
+          <button class="loc-btn" onclick="selectLocation(this, 'Food / Concourse Area')">📍 Food Concourse</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="step-title" style="margin-bottom: 0.45rem;">Step 2: What is happening?</div>
+        <div class="incident-type-grid">
+          <button class="incident-tap-btn" style="border-left: 4px solid var(--emergency-red);" onclick="submitReport('Medical Emergency / Fainting', 'critical')">
+            <span>🚑 Medical / Faint</span>
+            <span class="sub">Unconscious, heat, or injury</span>
+          </button>
+          <button class="incident-tap-btn" style="border-left: 4px solid var(--warning-amber);" onclick="submitReport('Physical Altercation / Fight', 'critical')">
+            <span>🥊 Fight / Disturbance</span>
+            <span class="sub">Escalating confrontation</span>
+          </button>
+          <button class="incident-tap-btn" style="border-left: 4px solid var(--warning-amber);" onclick="submitReport('Suspicious Person / Activity', 'urgent')">
+            <span>👁️ Suspicious Person</span>
+            <span class="sub">Unidentified or unauthorized</span>
+          </button>
+          <button class="incident-tap-btn" style="border-left: 4px solid var(--primary);" onclick="submitReport('Crowd Congestion / Bottleneck', 'urgent')">
+            <span>👥 Crowd Bottleneck</span>
+            <span class="sub">Blocked exit or surge</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Notification Toast -->
+  <div class="toast" id="toastMsg">Notification</div>
+
+  <script>
+    // State Store
+    let selectedLocation = "Gate 1 (North)";
+    let incidents = [
+      {
+        id: "INC-101",
+        zone: "Gate 1 (North)",
+        title: "Prohibited item detected during bag inspection",
+        priority: "urgent",
+        status: "UNASSIGNED",
+        assignedTo: "Unassigned",
+        time: "14:10",
+        backupNeeded: false
+      },
+      {
+        id: "INC-102",
+        zone: "Grandstand / Bleachers",
+        title: "Student fainted due to heat exhaustion",
+        priority: "critical",
+        status: "RESPONDING",
+        assignedTo: "Cadet Diaz (Medical Triage)",
+        time: "14:14",
+        backupNeeded: false
+      }
+    ];
+
+    function selectLocation(btn, loc) {
+      document.querySelectorAll(".loc-btn").forEach(b => b.classList.remove("selected"));
+      btn.classList.add("selected");
+      selectedLocation = loc;
+    }
+
+    function switchTab(tab) {
+      if (tab === "live") {
+        document.getElementById("liveView").classList.add("active");
+        document.getElementById("reportView").classList.remove("active");
+        document.getElementById("tabLiveBtn").classList.add("active");
+        document.getElementById("tabReportBtn").classList.remove("active");
+      } else {
+        document.getElementById("liveView").classList.remove("active");
+        document.getElementById("reportView").classList.add("active");
+        document.getElementById("tabLiveBtn").classList.remove("active");
+        document.getElementById("tabReportBtn").classList.add("active");
+      }
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById("toastMsg");
+      t.textContent = msg;
+      t.classList.add("visible");
+      setTimeout(() => t.classList.remove("visible"), 2000);
+    }
+
+    function renderFeed() {
+      const container = document.getElementById("feedContainer");
+      container.innerHTML = "";
+
+      let hasSos = false;
+      let activeUnresolved = 0;
+
+      incidents.forEach(item => {
+        if (item.status !== "RESOLVED") activeUnresolved++;
+        if (item.backupNeeded && item.status !== "RESOLVED") {
+          hasSos = true;
+          document.getElementById("backupAlertText").textContent = 
+            `🚨 ${item.assignedTo} requested BACKUP at ${item.zone}!`;
+        }
+
+        const card = document.createElement("div");
+        card.className = `incident-card ${item.priority} ${item.backupNeeded ? 'sos-active' : ''} ${item.status === 'RESOLVED' ? 'resolved' : ''}`;
+
+        let statusText = item.status;
+        let badgeClass = `state-${item.status}`;
+        if (item.backupNeeded) {
+          statusText = "🚨 BACKUP NEEDED";
+          badgeClass = "state-BACKUP";
+        }
+
+        let actions = "";
+        if (item.status === "UNASSIGNED") {
+          actions = `
+            <button class="action-btn btn-respond" onclick="claimCard('${item.id}')">
+              <span>✋ Claim & Respond</span>
+            </button>
+          `;
+        } else if (item.status === "RESPONDING" || item.status === "BACKUP_REQUESTED") {
+          actions = `
+            <button class="action-btn btn-backup" onclick="callBackup('${item.id}')">
+              <span>⚠️ Need Backup</span>
+            </button>
+            <button class="action-btn btn-handled" onclick="markHandled('${item.id}')">
+              <span>✓ Handled</span>
+            </button>
+          `;
+        } else if (item.status === "RESOLVED") {
+          actions = `
+            <div style="font-size: 0.78rem; color: var(--success-green); font-weight: 600;">
+              ✓ Situation resolved & safe (Closed at ${item.resolvedTime})
+            </div>
+          `;
+        }
+
+        card.innerHTML = `
+          <div class="card-top">
+            <div class="location-badge">📍 ${item.zone}</div>
+            <div class="time-stamp">${item.time}</div>
+          </div>
+          <div class="card-description">${item.title}</div>
+          <div class="card-meta-box">
+            <div>
+              <span style="color: var(--text-muted);">Assigned:</span>
+              <span class="officer-assigned-name">${item.assignedTo}</span>
+            </div>
+            <span class="state-badge ${badgeClass}">${statusText}</span>
+          </div>
+          <div class="action-group">
+            ${actions}
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      // Update counters
+      document.getElementById("activeCount").textContent = activeUnresolved;
+      const banner = document.getElementById("backupAlertBanner");
+      if (hasSos) {
+        banner.classList.add("active");
+      } else {
+        banner.classList.remove("active");
+      }
+    }
+
+    // Officer Interactions
+    function claimCard(id) {
+      const myRole = document.getElementById("userRole").value;
+      const item = incidents.find(i => i.id === id);
+      if (item) {
+        item.status = "RESPONDING";
+        item.assignedTo = myRole;
+        renderFeed();
+        showToast("Claimed! Other officers notified that you are en route.");
+      }
+    }
+
+    function callBackup(id) {
+      const item = incidents.find(i => i.id === id);
+      if (item) {
+        item.status = "BACKUP_REQUESTED";
+        item.backupNeeded = true;
+        renderFeed();
+        showToast("🚨 BACKUP REQUEST BROADCASTED TO ALL OFFICERS!");
+      }
+    }
+
+    function markHandled(id) {
+      const item = incidents.find(i => i.id === id);
+      if (item) {
+        item.status = "RESOLVED";
+        item.backupNeeded = false;
+        item.resolvedTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        renderFeed();
+        showToast("✓ Report marked handled and archived.");
+      }
+    }
+
+    function submitReport(title, priority) {
+      const newInc = {
+        id: "INC-" + (incidents.length + 101),
+        zone: selectedLocation,
+        title: title,
+        priority: priority,
+        status: "UNASSIGNED",
+        assignedTo: "Unassigned",
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        backupNeeded: false
+      };
+      incidents.unshift(newInc);
+      renderFeed();
+      switchTab("live");
+      showToast("Report beamed to all nearby officers!");
+    }
+
+    // Initial render
+    renderFeed();
+  </script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+{
+  "name": "aegis-security-suite",
+  "version": "1.0.0",
+  "description": "Production-grade, privacy-first security attendance checking and zero-internet offline emergency dispatch grid for criminology squads and civilian marshals.",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "NODE_ENV=production node server.js",
+    "test": "node --test tests/*.test.js"
+  },
+  "keywords": [
+    "security",
+    "offline-mesh",
+    "criminology",
+    "emergency-dispatch",
+    "zero-knowledge-biometrics",
+    "attendance-system"
+  ],
+  "author": "Aegis Tactical Engineering",
+  "license": "MIT"
+}

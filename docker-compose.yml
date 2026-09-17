@@ -1,0 +1,42 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Created: 2026-09-16 | Purpose: Local & Cloud Container Orchestration
+# Last verified with: Docker Compose v2.29+
+# Target: Aegis Security Suite + Cloud SQL PostgreSQL 16
+# ─────────────────────────────────────────────────────────────────────────────
+
+version: '3.8'
+
+services:
+  aegis-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: aegis-security-suite
+    restart: always
+    ports:
+      - "3000:8080"
+    environment:
+      - PORT=8080
+      - NODE_ENV=production
+      - GCP_PROJECT_ID=security-l1
+      - GCP_REGION=asia-east2
+    volumes:
+      - ./data:/app/data
+
+  # Local Cloud SQL / PostgreSQL 16 Mock for Offline Field Operations
+  postgres-db:
+    image: postgres:16-alpine
+    container_name: aegis-cloudsql-db
+    restart: always
+    environment:
+      POSTGRES_DB: security_attendance
+      POSTGRES_USER: app_user
+      POSTGRES_PASSWORD: secure_local_password_2026
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./schema.sql:/docker-entrypoint-initdb.d/init.sql
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
