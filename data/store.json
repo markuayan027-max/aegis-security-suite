@@ -69,7 +69,7 @@
       "secondaryPhone": "local 1002",
       "radioFreq": "TAC-1 (462.5625 MHz)",
       "category": "CAMPUS_INTERNAL",
-      "description": "On-site Aegis command desk. First internal escalation point.",
+      "description": "On-site E-Secure command desk. First internal escalation point.",
       "priorityOrder": 6,
       "isActive": true
     },
@@ -120,7 +120,7 @@
   ],
   "adminAccounts": [
     {
-      "username": "admin@aegis.tactical",
+      "username": "admin@E-Secure.tactical",
       "passkey": "SEC-ADMIN-2026",
       "role": "SUPER_ADMIN",
       "displayName": "Commander Inspector Ramirez"
@@ -178,7 +178,7 @@
     {
       "studentId": "m-101",
       "eventId": "evt-101",
-      "amIn": "12:34 PM",
+      "amIn": "01:05 PM",
       "amOut": "11:58 AM",
       "pmIn": "01:15 PM",
       "pmOut": null,
@@ -261,7 +261,8 @@
       "radioChannel": "TAC-1",
       "dutyStation": "Gate North / Kiosk A",
       "assignedUnitId": "u-101",
-      "dutyStatus": "OFF_DUTY"
+      "dutyStatus": "ON_DUTY",
+      "yearLevel": "3RD_YEAR"
     },
     {
       "id": "m-102",
@@ -281,7 +282,8 @@
       "radioChannel": "TAC-1",
       "dutyStation": "Central Quad / Kiosk B",
       "assignedUnitId": "u-101",
-      "dutyStatus": "ON_DUTY"
+      "dutyStatus": "ON_DUTY",
+      "yearLevel": "3RD_YEAR"
     },
     {
       "id": "m-103",
@@ -302,7 +304,8 @@
       "radioChannel": "TAC-2",
       "dutyStation": "Athletic Arena / East Bleachers",
       "assignedUnitId": "u-102",
-      "dutyStatus": "ON_DUTY"
+      "dutyStatus": "ON_DUTY",
+      "yearLevel": "3RD_YEAR"
     },
     {
       "id": "m-104",
@@ -322,7 +325,8 @@
       "radioChannel": "TAC-1",
       "dutyStation": "South Gate / Standby Post",
       "assignedUnitId": "u-102",
-      "dutyStatus": "OFF_DUTY"
+      "dutyStatus": "OFF_DUTY",
+      "yearLevel": "3RD_YEAR"
     },
     {
       "id": "m-1",
@@ -344,7 +348,8 @@
       "radioChannel": "TAC-CMD",
       "dutyStation": "Command Post Alpha",
       "assignedUnitId": "u-103",
-      "dutyStatus": "ON_DUTY"
+      "dutyStatus": "ON_DUTY",
+      "yearLevel": "OFFICER"
     },
     {
       "id": "m-2",
@@ -363,7 +368,8 @@
       "radioChannel": "MED-1",
       "dutyStation": "Field Medical Station Bravo",
       "assignedUnitId": "u-101",
-      "dutyStatus": "ON_DUTY"
+      "dutyStatus": "ON_DUTY",
+      "yearLevel": "OFFICER"
     },
     {
       "id": "m-3",
@@ -381,7 +387,8 @@
       "radioChannel": "TAC-1",
       "dutyStation": "North Perimeter / Gate 1",
       "assignedUnitId": "u-103",
-      "dutyStatus": "ON_DUTY"
+      "dutyStatus": "ON_DUTY",
+      "yearLevel": "OFFICER"
     },
     {
       "id": "m-4",
@@ -399,7 +406,8 @@
       "radioChannel": "OPS-1",
       "dutyStation": "Tactical Radio Room",
       "assignedUnitId": "u-101",
-      "dutyStatus": "ON_DUTY"
+      "dutyStatus": "ON_DUTY",
+      "yearLevel": "OFFICER"
     },
     {
       "id": "m-5",
@@ -418,7 +426,8 @@
       "radioChannel": "TAC-2",
       "dutyStation": "South Evacuation Corridor",
       "assignedUnitId": "u-102",
-      "dutyStatus": "STANDBY"
+      "dutyStatus": "STANDBY",
+      "yearLevel": "OFFICER"
     },
     {
       "id": "m-6",
@@ -436,10 +445,221 @@
       "radioChannel": "TAC-1",
       "dutyStation": "South Access Checkpoint",
       "assignedUnitId": "u-102",
+      "dutyStatus": "STANDBY",
+      "yearLevel": "OFFICER"
+    },
+    {
+      "id": "m-201",
+      "identifierCode": "STU-1001",
+      "studentIdNumber": "2026-CRIM-1001",
+      "displayName": "Cadet Angelo Morales",
+      "memberType": "STUDENT",
+      "sectionName": "BS-CRIM 1-A",
+      "yearLevel": "1ST_YEAR",
+      "department": "College of Criminology",
+      "roleTitle": "Student Cadet",
+      "physicalRating": 4,
+      "isRescueCertified": false,
+      "specialties": [
+        "PATROL"
+      ],
+      "phone": "0917-555-0201",
+      "radioChannel": "TAC-1",
+      "dutyStation": "Gate North / Kiosk A",
+      "assignedUnitId": "u-101",
+      "dutyStatus": "STANDBY"
+    },
+    {
+      "id": "m-202",
+      "identifierCode": "STU-1002",
+      "studentIdNumber": "2026-CRIM-1002",
+      "displayName": "Cadet Bianca Cruz",
+      "memberType": "STUDENT",
+      "sectionName": "BS-CRIM 1-A",
+      "yearLevel": "1ST_YEAR",
+      "department": "College of Criminology",
+      "roleTitle": "Student Cadet",
+      "physicalRating": 3,
+      "isRescueCertified": false,
+      "specialties": [
+        "FIRST_AID"
+      ],
+      "phone": "0917-555-0202",
+      "radioChannel": "TAC-1",
+      "dutyStation": "Main Gate Entrance",
+      "assignedUnitId": "u-101",
+      "dutyStatus": "STANDBY"
+    },
+    {
+      "id": "m-203",
+      "identifierCode": "STU-1003",
+      "studentIdNumber": "2026-CRIM-1003",
+      "displayName": "Cadet Christian Reyes",
+      "memberType": "STUDENT",
+      "sectionName": "BS-CRIM 1-B",
+      "yearLevel": "1ST_YEAR",
+      "department": "College of Criminology",
+      "roleTitle": "Student Cadet",
+      "physicalRating": 4,
+      "isRescueCertified": true,
+      "specialties": [
+        "PATROL",
+        "EXTRICATION"
+      ],
+      "phone": "0917-555-0203",
+      "radioChannel": "TAC-2",
+      "dutyStation": "Science Complex",
+      "assignedUnitId": "u-102",
+      "dutyStatus": "STANDBY"
+    },
+    {
+      "id": "m-301",
+      "identifierCode": "STU-2001",
+      "studentIdNumber": "2025-CRIM-2001",
+      "displayName": "Cadet Danica Flores",
+      "memberType": "STUDENT",
+      "sectionName": "BS-CRIM 2-A",
+      "yearLevel": "2ND_YEAR",
+      "department": "College of Criminology",
+      "roleTitle": "Student Cadet",
+      "physicalRating": 4,
+      "isRescueCertified": true,
+      "specialties": [
+        "PATROL",
+        "FIRST_AID"
+      ],
+      "phone": "0917-555-0301",
+      "radioChannel": "TAC-1",
+      "dutyStation": "Quadrangle Walkway",
+      "assignedUnitId": "u-102",
+      "dutyStatus": "STANDBY"
+    },
+    {
+      "id": "m-302",
+      "identifierCode": "STU-2002",
+      "studentIdNumber": "2025-CRIM-2002",
+      "displayName": "Cadet Eduardo Gomez",
+      "memberType": "STUDENT",
+      "sectionName": "BS-CRIM 2-A",
+      "yearLevel": "2ND_YEAR",
+      "department": "College of Criminology",
+      "roleTitle": "Student Cadet",
+      "physicalRating": 3,
+      "isRescueCertified": false,
+      "specialties": [
+        "ACCESS_CONTROL"
+      ],
+      "phone": "0917-555-0302",
+      "radioChannel": "TAC-2",
+      "dutyStation": "South Gate / Standby Post",
+      "assignedUnitId": "u-103",
+      "dutyStatus": "STANDBY"
+    },
+    {
+      "id": "m-303",
+      "identifierCode": "STU-2003",
+      "studentIdNumber": "2025-CRIM-2003",
+      "displayName": "Cadet Fatima Mendoza",
+      "memberType": "STUDENT",
+      "sectionName": "BS-CRIM 2-B",
+      "yearLevel": "2ND_YEAR",
+      "department": "College of Criminology",
+      "roleTitle": "Student Cadet",
+      "physicalRating": 4,
+      "isRescueCertified": true,
+      "specialties": [
+        "FIRST_AID",
+        "TRIAGE"
+      ],
+      "phone": "0917-555-0303",
+      "radioChannel": "MED-1",
+      "dutyStation": "Clinic / Field Station",
+      "assignedUnitId": "u-102",
+      "dutyStatus": "STANDBY"
+    },
+    {
+      "id": "m-401",
+      "identifierCode": "STU-4001",
+      "studentIdNumber": "2023-CRIM-4001",
+      "displayName": "Cadet Gabriel Navarro",
+      "memberType": "STUDENT",
+      "sectionName": "BS-CRIM 4-A",
+      "yearLevel": "4TH_YEAR",
+      "department": "College of Criminology",
+      "roleTitle": "Senior Student Marshal",
+      "physicalRating": 5,
+      "isRescueCertified": true,
+      "specialties": [
+        "TACTICAL_BREACHING",
+        "INCIDENT_MGMT"
+      ],
+      "phone": "0917-555-0401",
+      "radioChannel": "TAC-CMD",
+      "dutyStation": "Command Post Alpha",
+      "assignedUnitId": "u-101",
+      "dutyStatus": "ON_DUTY"
+    },
+    {
+      "id": "m-402",
+      "identifierCode": "STU-4002",
+      "studentIdNumber": "2023-CRIM-4002",
+      "displayName": "Cadet Hannah Diaz",
+      "memberType": "STUDENT",
+      "sectionName": "BS-CRIM 4-A",
+      "yearLevel": "4TH_YEAR",
+      "department": "College of Criminology",
+      "roleTitle": "Senior Student Marshal",
+      "physicalRating": 4,
+      "isRescueCertified": true,
+      "specialties": [
+        "TRAUMA_FIRST_AID",
+        "CROWD_CONTROL"
+      ],
+      "phone": "0917-555-0402",
+      "radioChannel": "MED-1",
+      "dutyStation": "Main Gate Checkpoint",
+      "assignedUnitId": "u-102",
+      "dutyStatus": "ON_DUTY"
+    },
+    {
+      "id": "m-403",
+      "identifierCode": "STU-4003",
+      "studentIdNumber": "2023-CRIM-4003",
+      "displayName": "Cadet Ian Gutierrez",
+      "memberType": "STUDENT",
+      "sectionName": "BS-CRIM 4-B",
+      "yearLevel": "4TH_YEAR",
+      "department": "College of Criminology",
+      "roleTitle": "Senior Student Marshal",
+      "physicalRating": 4,
+      "isRescueCertified": false,
+      "specialties": [
+        "PATROL",
+        "COMMS"
+      ],
+      "phone": "0917-555-0403",
+      "radioChannel": "OPS-1",
+      "dutyStation": "Perimeter Sector 3",
+      "assignedUnitId": "u-103",
       "dutyStatus": "STANDBY"
     }
   ],
   "attendanceLogs": [
+    {
+      "id": "att-1790053527473",
+      "memberId": "m-101",
+      "displayName": "Cadet Ronald Ramos",
+      "identifierCode": "STU-0801",
+      "shiftType": "AM_IN",
+      "eventType": "CHECK_IN",
+      "verificationMethod": "MANUAL_OVERRIDE",
+      "verificationLatencyMs": 0,
+      "terminalCode": "OFFICER-OVERRIDE-DESK",
+      "recordedBy": "Commander Inspector Ramirez",
+      "isOverride": true,
+      "overrideReason": "Manual ID Verified",
+      "loggedAt": "2026-09-22T05:05:27.473Z"
+    },
     {
       "id": "att-1789619685334",
       "memberId": "m-101",
@@ -548,6 +768,35 @@
       "respondedAt": null,
       "createdAt": "2026-09-17T04:27:07.869Z",
       "updatedAt": "2026-09-17T04:27:07.869Z"
+    }
+  ],
+  "pendingRegistrations": [
+    {
+      "id": "req-101",
+      "name": "Tyler Garcia",
+      "email": "t.garcia@campus.edu",
+      "requestedRole": "cadet",
+      "preferredStation": "Main Gate Entrance",
+      "date": "Today, 2:10 PM",
+      "status": "PENDING"
+    },
+    {
+      "id": "req-102",
+      "name": "Maria Santos",
+      "email": "m.santos@campus.edu",
+      "requestedRole": "representative",
+      "preferredStation": "Science Complex",
+      "date": "Today, 1:45 PM",
+      "status": "PENDING"
+    },
+    {
+      "id": "req-103",
+      "name": "Joshua Lim",
+      "email": "j.lim@campus.edu",
+      "requestedRole": "cadet",
+      "preferredStation": "Quadrangle Walkway",
+      "date": "Today, 11:30 AM",
+      "status": "PENDING"
     }
   ]
 }

@@ -5,7 +5,7 @@ skills:
   - criminology-cadet-mesh
 ---
 
-# Local Criminology Field Agent (Aegis Mesh)
+# Local Criminology Field Agent (E-Secure Mesh)
 
 ## Mission & Scope
 This agent is localized directly inside the active workspace:

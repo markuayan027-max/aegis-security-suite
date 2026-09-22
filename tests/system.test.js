@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// Created: 2026-09-16 | Purpose: Aegis Security Suite Automated Verification
+// Created: 2026-09-16 | Purpose: E-Secure 1.0 Automated Verification
 // Target: Node.js 20+ Native Test Runner (node --test)
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -13,7 +13,16 @@ import {
   validateFiveWs,
   generateGovDossier,
   checkAttendanceAccess,
-  getCadetContactRoster
+  getCadetContactRoster,
+  createSession,
+  getSessionFromRequest,
+  revokeSession,
+  activeSessions,
+  resolveUnifiedLogin,
+  inferCurrentShift,
+  findMemberByIdentifier,
+  buildAttendanceBoard,
+  canOperateAttendanceKiosk
 } from '../server.js';
 
 test('Reference Code Generator conforms to POD-AI Concern pattern', () => {
@@ -261,4 +270,112 @@ test('Cadet Mesh: getCadetContactRoster groups members by unit with phone, radio
   assert.equal(cadetC.phone, null);
   assert.equal(cadetC.dutyStation, 'Unassigned Post', 'Null duty station should default to Unassigned Post');
 });
+
+test('Session Lifecycle: generates crypto tokens, verifies active sessions, and revokes them', () => {
+  const mockUser = {
+    id: 'test-admin-1',
+    displayName: 'Test Commander',
+    role: 'ADMIN',
+    roleTitle: 'Administrator'
+  };
+
+  const session = createSession(mockUser);
+  assert.ok(session.token.startsWith('esecure_sec_') || session.token.startsWith('E-Secure_sec_'), 'Token must have security prefix');
+  assert.equal(session.user.displayName, 'Test Commander');
+  assert.equal(session.user.role, 'ADMIN');
+
+  // Test Bearer header extraction
+  const mockReqBearer = {
+    headers: {
+      'authorization': `Bearer ${session.token}`
+    }
+  };
+  const verifiedBearer = getSessionFromRequest(mockReqBearer);
+  assert.ok(verifiedBearer, 'Should extract and verify session from Bearer authorization header');
+  assert.equal(verifiedBearer.user.id, 'test-admin-1');
+
+  // Test x-session-token extraction
+  const mockReqCustomHeader = {
+    headers: {
+      'x-session-token': session.token
+    }
+  };
+  const verifiedCustom = getSessionFromRequest(mockReqCustomHeader);
+  assert.ok(verifiedCustom, 'Should extract and verify session from x-session-token header');
+
+  // Test invalid token
+  const mockReqInvalid = {
+    headers: {
+      'authorization': 'Bearer fake-invalid-token-123'
+    }
+  };
+  assert.equal(getSessionFromRequest(mockReqInvalid), null, 'Invalid token must return null');
+
+  // Test token revocation / logout
+  const revoked = revokeSession(session.token);
+  assert.equal(revoked, true, 'Revocation should succeed');
+  assert.equal(getSessionFromRequest(mockReqBearer), null, 'Revoked token must not validate');
+});
+
+test('Unified login resolves admin, student, officer, and department codes without a client role', () => {
+  const stores = {
+    adminAccounts: [
+      { username: 'admin@esecure.tactical', passkey: 'SEC-ADMIN-2026', role: 'SUPER_ADMIN', displayName: 'Commander Inspector Ramirez' }
+    ],
+    members: [
+      { id: 'm-101', identifierCode: 'STU-0801', studentIdNumber: '2026-CRIM-0801', displayName: 'Cadet Ronald Ramos', memberType: 'STUDENT', roleTitle: 'Student Cadet', department: 'College of Criminology', dutyStation: 'Gate North' },
+      { id: 'm-1', identifierCode: 'CADET-7701', displayName: 'Officer Marcus Vance', memberType: 'OFFICER', roleTitle: 'Squad Lead', department: 'Tactical Squad', dutyStation: 'Command Post Alpha' }
+    ],
+    deptLeaders: [
+      { id: 'dl-1', displayName: 'Leader Ana Reyes', department: 'College of Nursing', sectionName: 'BSN 3-A', accessCode: 'NURSE-SEC-01', email: 'areyes@campus.edu' }
+    ]
+  };
+
+  const adminByPasskeyField = resolveUnifiedLogin(stores, '', 'SEC-ADMIN-2026');
+  assert.equal(adminByPasskeyField.user.role, 'ADMIN');
+
+  const adminByIdentifier = resolveUnifiedLogin(stores, 'SEC-ADMIN-2026', '');
+  assert.equal(adminByIdentifier.user.displayName, 'Commander Inspector Ramirez');
+
+  const adminByEmail = resolveUnifiedLogin(stores, 'admin@esecure.tactical', 'SEC-ADMIN-2026');
+  assert.equal(adminByEmail.kind, 'admin');
+
+  const student = resolveUnifiedLogin(stores, 'STU-0801', '');
+  assert.equal(student.kind, 'cadet');
+  assert.equal(student.user.displayName, 'Cadet Ronald Ramos');
+
+  const officer = resolveUnifiedLogin(stores, 'CADET-7701', '');
+  assert.equal(officer.kind, 'cadet');
+  assert.match(officer.user.roleTitle, /Squad Lead/);
+
+  const representative = resolveUnifiedLogin(stores, 'NURSE-SEC-01', '');
+  assert.equal(representative.kind, 'representative');
+  assert.equal(representative.user.role, 'SCENE_REP');
+
+  assert.equal(resolveUnifiedLogin(stores, 'NO-SUCH-ID', 'wrong'), null);
+});
+
+test('Attendance board counts this-shift scans and pending personnel', () => {
+  const now = new Date();
+  const appState = {
+    members: [
+      { id: 'm-101', displayName: 'Cadet A', identifierCode: 'STU-0801', dutyStation: 'Gate', dutyStatus: 'ON_DUTY', roleTitle: 'Cadet' },
+      { id: 'm-102', displayName: 'Cadet B', identifierCode: 'STU-0802', dutyStation: 'Quad', dutyStatus: 'STANDBY', roleTitle: 'Cadet' }
+    ],
+    attendanceLogs: [
+      { id: 'att-1', memberId: 'm-101', shiftType: 'AM_IN', loggedAt: now.toISOString(), displayName: 'Cadet A', identifierCode: 'STU-0801' }
+    ]
+  };
+
+  const board = buildAttendanceBoard(appState, 'AM_IN');
+  assert.equal(board.metrics.scannedThisShift, 1);
+  assert.equal(board.metrics.pendingThisShift, 1);
+  assert.equal(board.pending[0].identifierCode, 'STU-0802');
+  assert.equal(findMemberByIdentifier(appState.members, 'stu-0801').id, 'm-101');
+  assert.equal(canOperateAttendanceKiosk('CADET'), true);
+  assert.equal(canOperateAttendanceKiosk('ADMIN'), true);
+  assert.equal(canOperateAttendanceKiosk('GUEST'), false);
+  assert.ok(['AM_IN', 'AM_OUT', 'PM_IN', 'PM_OUT'].includes(inferCurrentShift(now)));
+});
+
 

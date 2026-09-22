@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// Created: 2026-09-16 | Purpose: Aegis Security Suite API & Tactical Server
+// Created: 2026-09-16 | Purpose: E-Secure 1.0 API & Tactical Server
 // Target: Google Cloud SQL / Node.js 20+ Native ESM
 // Compatibility: Run with AI CLI: `node server.js` | Zero npm dependencies
 // ─────────────────────────────────────────────────────────────────────────────
@@ -58,7 +58,7 @@ const defaultState = {
     {
       id: "hl-6", agencyName: "Campus Security Tactical Desk", shortCode: "TAC-DESK",
       primaryPhone: "local 1001", secondaryPhone: "local 1002", radioFreq: "TAC-1 (462.5625 MHz)",
-      category: "CAMPUS_INTERNAL", description: "On-site Aegis command desk. First internal escalation point.",
+      category: "CAMPUS_INTERNAL", description: "On-site E-Secure 1.0 command desk. First internal escalation point.",
       priorityOrder: 6, isActive: true
     },
     {
@@ -88,10 +88,39 @@ const defaultState = {
 
   adminAccounts: [
     {
-      username: "admin@aegis.tactical",
+      username: "admin@esecure.tactical",
       passkey: "SEC-ADMIN-2026",
       role: "SUPER_ADMIN",
       displayName: "Commander Inspector Ramirez"
+    }
+  ],
+  pendingRegistrations: [
+    {
+      id: "req-101",
+      name: "Tyler Garcia",
+      email: "t.garcia@campus.edu",
+      requestedRole: "cadet",
+      preferredStation: "Main Gate Entrance",
+      date: "Today, 2:10 PM",
+      status: "PENDING"
+    },
+    {
+      id: "req-102",
+      name: "Maria Santos",
+      email: "m.santos@campus.edu",
+      requestedRole: "representative",
+      preferredStation: "Science Complex",
+      date: "Today, 1:45 PM",
+      status: "PENDING"
+    },
+    {
+      id: "req-103",
+      name: "Joshua Lim",
+      email: "j.lim@campus.edu",
+      requestedRole: "cadet",
+      preferredStation: "Quadrangle Walkway",
+      date: "Today, 11:30 AM",
+      status: "PENDING"
     }
   ],
   events: [
@@ -197,6 +226,113 @@ const defaultState = {
     }
   ],
   members: [
+    // 1st Year Criminology Cadets
+    {
+      id: "m-201",
+      identifierCode: "STU-1001",
+      studentIdNumber: "2026-CRIM-1001",
+      displayName: "Cadet Angelo Morales",
+      memberType: "STUDENT",
+      sectionName: "BS-CRIM 1-A",
+      yearLevel: "1ST_YEAR",
+      department: "College of Criminology",
+      roleTitle: "Student Cadet",
+      physicalRating: 4,
+      isRescueCertified: false,
+      specialties: ["PATROL"],
+      phone: "0917-555-0201", radioChannel: "TAC-1", dutyStation: "Gate North / Kiosk A",
+      assignedUnitId: "u-101",
+      dutyStatus: "STANDBY"
+    },
+    {
+      id: "m-202",
+      identifierCode: "STU-1002",
+      studentIdNumber: "2026-CRIM-1002",
+      displayName: "Cadet Bianca Cruz",
+      memberType: "STUDENT",
+      sectionName: "BS-CRIM 1-A",
+      yearLevel: "1ST_YEAR",
+      department: "College of Criminology",
+      roleTitle: "Student Cadet",
+      physicalRating: 3,
+      isRescueCertified: false,
+      specialties: ["FIRST_AID"],
+      phone: "0917-555-0202", radioChannel: "TAC-1", dutyStation: "Main Gate Entrance",
+      assignedUnitId: "u-101",
+      dutyStatus: "STANDBY"
+    },
+    {
+      id: "m-203",
+      identifierCode: "STU-1003",
+      studentIdNumber: "2026-CRIM-1003",
+      displayName: "Cadet Christian Reyes",
+      memberType: "STUDENT",
+      sectionName: "BS-CRIM 1-B",
+      yearLevel: "1ST_YEAR",
+      department: "College of Criminology",
+      roleTitle: "Student Cadet",
+      physicalRating: 4,
+      isRescueCertified: true,
+      specialties: ["PATROL", "EXTRICATION"],
+      phone: "0917-555-0203", radioChannel: "TAC-2", dutyStation: "Science Complex",
+      assignedUnitId: "u-102",
+      dutyStatus: "STANDBY"
+    },
+
+    // 2nd Year Criminology Cadets
+    {
+      id: "m-301",
+      identifierCode: "STU-2001",
+      studentIdNumber: "2025-CRIM-2001",
+      displayName: "Cadet Danica Flores",
+      memberType: "STUDENT",
+      sectionName: "BS-CRIM 2-A",
+      yearLevel: "2ND_YEAR",
+      department: "College of Criminology",
+      roleTitle: "Student Cadet",
+      physicalRating: 4,
+      isRescueCertified: true,
+      specialties: ["PATROL", "FIRST_AID"],
+      phone: "0917-555-0301", radioChannel: "TAC-1", dutyStation: "Quadrangle Walkway",
+      assignedUnitId: "u-102",
+      dutyStatus: "STANDBY"
+    },
+    {
+      id: "m-302",
+      identifierCode: "STU-2002",
+      studentIdNumber: "2025-CRIM-2002",
+      displayName: "Cadet Eduardo Gomez",
+      memberType: "STUDENT",
+      sectionName: "BS-CRIM 2-A",
+      yearLevel: "2ND_YEAR",
+      department: "College of Criminology",
+      roleTitle: "Student Cadet",
+      physicalRating: 3,
+      isRescueCertified: false,
+      specialties: ["ACCESS_CONTROL"],
+      phone: "0917-555-0302", radioChannel: "TAC-2", dutyStation: "South Gate / Standby Post",
+      assignedUnitId: "u-103",
+      dutyStatus: "STANDBY"
+    },
+    {
+      id: "m-303",
+      identifierCode: "STU-2003",
+      studentIdNumber: "2025-CRIM-2003",
+      displayName: "Cadet Fatima Mendoza",
+      memberType: "STUDENT",
+      sectionName: "BS-CRIM 2-B",
+      yearLevel: "2ND_YEAR",
+      department: "College of Criminology",
+      roleTitle: "Student Cadet",
+      physicalRating: 4,
+      isRescueCertified: true,
+      specialties: ["FIRST_AID", "TRIAGE"],
+      phone: "0917-555-0303", radioChannel: "MED-1", dutyStation: "Clinic / Field Station",
+      assignedUnitId: "u-102",
+      dutyStatus: "STANDBY"
+    },
+
+    // 3rd Year Criminology Cadets
     {
       id: "m-101",
       identifierCode: "STU-0801",
@@ -204,6 +340,7 @@ const defaultState = {
       displayName: "Cadet Ronald Ramos",
       memberType: "STUDENT",
       sectionName: "BS-CRIM 3-A",
+      yearLevel: "3RD_YEAR",
       department: "College of Criminology",
       roleTitle: "Student Cadet",
       physicalRating: 4,
@@ -220,6 +357,7 @@ const defaultState = {
       displayName: "Cadet Nicole Santos",
       memberType: "STUDENT",
       sectionName: "BS-CRIM 3-A",
+      yearLevel: "3RD_YEAR",
       department: "College of Criminology",
       roleTitle: "Student Cadet",
       physicalRating: 3,
@@ -236,6 +374,7 @@ const defaultState = {
       displayName: "Cadet Kevin Bautista",
       memberType: "STUDENT",
       sectionName: "BS-CRIM 3-B",
+      yearLevel: "3RD_YEAR",
       department: "College of Criminology",
       roleTitle: "Student Cadet",
       physicalRating: 5,
@@ -252,6 +391,7 @@ const defaultState = {
       displayName: "Cadet Bea Alcantara",
       memberType: "STUDENT",
       sectionName: "BS-CRIM 3-B",
+      yearLevel: "3RD_YEAR",
       department: "College of Criminology",
       roleTitle: "Student Cadet",
       physicalRating: 3,
@@ -261,6 +401,61 @@ const defaultState = {
       assignedUnitId: "u-103",
       dutyStatus: "OFF_DUTY"
     },
+
+    // 4th Year Senior Cadets
+    {
+      id: "m-401",
+      identifierCode: "STU-4001",
+      studentIdNumber: "2023-CRIM-4001",
+      displayName: "Cadet Gabriel Navarro",
+      memberType: "STUDENT",
+      sectionName: "BS-CRIM 4-A",
+      yearLevel: "4TH_YEAR",
+      department: "College of Criminology",
+      roleTitle: "Senior Student Marshal",
+      physicalRating: 5,
+      isRescueCertified: true,
+      specialties: ["TACTICAL_BREACHING", "INCIDENT_MGMT"],
+      phone: "0917-555-0401", radioChannel: "TAC-CMD", dutyStation: "Command Post Alpha",
+      assignedUnitId: "u-101",
+      dutyStatus: "ON_DUTY"
+    },
+    {
+      id: "m-402",
+      identifierCode: "STU-4002",
+      studentIdNumber: "2023-CRIM-4002",
+      displayName: "Cadet Hannah Diaz",
+      memberType: "STUDENT",
+      sectionName: "BS-CRIM 4-A",
+      yearLevel: "4TH_YEAR",
+      department: "College of Criminology",
+      roleTitle: "Senior Student Marshal",
+      physicalRating: 4,
+      isRescueCertified: true,
+      specialties: ["TRAUMA_FIRST_AID", "CROWD_CONTROL"],
+      phone: "0917-555-0402", radioChannel: "MED-1", dutyStation: "Main Gate Checkpoint",
+      assignedUnitId: "u-102",
+      dutyStatus: "ON_DUTY"
+    },
+    {
+      id: "m-403",
+      identifierCode: "STU-4003",
+      studentIdNumber: "2023-CRIM-4003",
+      displayName: "Cadet Ian Gutierrez",
+      memberType: "STUDENT",
+      sectionName: "BS-CRIM 4-B",
+      yearLevel: "4TH_YEAR",
+      department: "College of Criminology",
+      roleTitle: "Senior Student Marshal",
+      physicalRating: 4,
+      isRescueCertified: false,
+      specialties: ["PATROL", "COMMS"],
+      phone: "0917-555-0403", radioChannel: "OPS-1", dutyStation: "Perimeter Sector 3",
+      assignedUnitId: "u-103",
+      dutyStatus: "STANDBY"
+    },
+
+    // Tactical Officers
     {
       id: "m-1",
       identifierCode: "CADET-7701",
@@ -268,9 +463,10 @@ const defaultState = {
       displayName: "Officer Marcus Vance",
       memberType: "OFFICER",
       sectionName: "Tactical Officers",
+      yearLevel: "OFFICER",
       department: "Criminology Tactical Squad",
       roleTitle: "Squad Lead / Heavy Rescue",
-      physicalRating: 5, // 1-5 scale (4-5 = Heavy Rescue Capable)
+      physicalRating: 5,
       isRescueCertified: true,
       specialties: ["HEAVY_RESCUE", "EXTRICATION", "TACTICAL_BREACHING"],
       phone: "0917-777-0001", radioChannel: "TAC-CMD", dutyStation: "Command Post Alpha",
@@ -281,6 +477,9 @@ const defaultState = {
       id: "m-2",
       identifierCode: "CADET-7702",
       displayName: "Cadet Elena Rostova",
+      memberType: "OFFICER",
+      sectionName: "Tactical Officers",
+      yearLevel: "OFFICER",
       department: "Criminology Tactical Squad",
       roleTitle: "Trauma Medic / Tactical EMT",
       physicalRating: 4,
@@ -294,6 +493,9 @@ const defaultState = {
       id: "m-3",
       identifierCode: "CADET-7703",
       displayName: "Cadet Mateo Cruz",
+      memberType: "OFFICER",
+      sectionName: "Tactical Officers",
+      yearLevel: "OFFICER",
       department: "Security & Crowd Control",
       roleTitle: "Perimeter Observer",
       physicalRating: 3,
@@ -307,6 +509,9 @@ const defaultState = {
       id: "m-4",
       identifierCode: "CADET-7704",
       displayName: "Cadet Samuel Kim",
+      memberType: "OFFICER",
+      sectionName: "Tactical Officers",
+      yearLevel: "OFFICER",
       department: "Communications & Surveillance",
       roleTitle: "Radio Dispatcher",
       physicalRating: 2,
@@ -320,6 +525,9 @@ const defaultState = {
       id: "m-5",
       identifierCode: "CADET-7705",
       displayName: "Cadet Jaxson Miller",
+      memberType: "OFFICER",
+      sectionName: "Tactical Officers",
+      yearLevel: "OFFICER",
       department: "Criminology Tactical Squad",
       roleTitle: "Heavy Extrication Specialist",
       physicalRating: 5,
@@ -333,6 +541,9 @@ const defaultState = {
       id: "m-6",
       identifierCode: "CADET-7706",
       displayName: "Cadet David O'Connor",
+      memberType: "OFFICER",
+      sectionName: "Tactical Officers",
+      yearLevel: "OFFICER",
       department: "Security & Crowd Control",
       roleTitle: "Perimeter Marshal",
       physicalRating: 3,
@@ -416,6 +627,30 @@ if (fs.existsSync(DATA_FILE)) {
     console.warn("Could not read persistent store, using default seed data:", err.message);
   }
 }
+if (!state.pendingRegistrations) {
+  state.pendingRegistrations = [...defaultState.pendingRegistrations];
+}
+if (!state.members || state.members.length < defaultState.members.length) {
+  const existingIds = new Set((state.members || []).map(m => m.id));
+  state.members = state.members || [];
+  for (const defMember of defaultState.members) {
+    if (!existingIds.has(defMember.id)) {
+      state.members.push(defMember);
+    }
+  }
+}
+// Normalize yearLevel on all members
+for (const m of (state.members || [])) {
+  if (!m.yearLevel) {
+    const sec = (m.sectionName || '').toUpperCase();
+    if (m.memberType === 'OFFICER' || sec.includes('TACTICAL')) m.yearLevel = 'OFFICER';
+    else if (sec.includes('1-') || sec.includes('CRIM 1')) m.yearLevel = '1ST_YEAR';
+    else if (sec.includes('2-') || sec.includes('CRIM 2')) m.yearLevel = '2ND_YEAR';
+    else if (sec.includes('3-') || sec.includes('CRIM 3')) m.yearLevel = '3RD_YEAR';
+    else if (sec.includes('4-') || sec.includes('CRIM 4')) m.yearLevel = '4TH_YEAR';
+    else m.yearLevel = m.memberType === 'STUDENT' ? '3RD_YEAR' : 'OFFICER';
+  }
+}
 
 function persistState() {
   try {
@@ -495,7 +730,7 @@ export function generateGovDossier(report, bureau) {
 
   const dossier = [
     `═══════════════════════════════════════════`,
-    `   AEGIS TACTICAL ESCALATION DOSSIER`,
+    `   E-SECURE 1.0 TACTICAL ESCALATION DOSSIER`,
     `   ${dossierCode}`,
     `═══════════════════════════════════════════`,
     `TO BUREAU : ${bureau}`,
@@ -515,15 +750,287 @@ export function generateGovDossier(report, bureau) {
     `Photo     : ${report.hasLivePhoto ? 'YES (live capture attached)' : `NO — Reason: ${report.noPhotoReason || 'Not stated'}`}`,
     `Verified  : ${report.hasLivePhoto ? 'LIVE PHOTO VERIFIED' : 'UNVERIFIED (no photo)'}`,
     `═══════════════════════════════════════════`,
-    `DISPATCHED BY AEGIS SECURITY SUITE / Criminology Campus Security`,
+    `DISPATCHED BY E-SECURE 1.0 / Criminology Campus Security`,
   ].join('\n');
 
   return { dossierCode, dossier, mapLink };
 }
 
-// Strict Admin-Only Attendance Access Guard
+// ── Unified credential resolver (no client-chosen role) ─────────────────────
+function normAuth(value) {
+  return String(value || '').trim();
+}
+
+function codesMatch(value, identifier) {
+  if (!value || !identifier) return false;
+  return String(value).trim().toUpperCase() === identifier.toUpperCase();
+}
+
+export function resolveUnifiedLogin(stores, identifier, passkey) {
+  const ident = normAuth(identifier);
+  const key = normAuth(passkey);
+  const admins = stores.adminAccounts || [];
+  const members = stores.members || [];
+  const leaders = stores.deptLeaders || [];
+
+  const admin = admins.find((account) => {
+    const usernameMatch = ident && account.username && account.username.toLowerCase() === ident.toLowerCase();
+    if (usernameMatch && key && account.passkey === key) return true;
+    if (account.passkey && key && account.passkey === key && (!ident || usernameMatch || account.passkey === ident)) return true;
+    if (account.passkey && !key && ident && account.passkey === ident) return true;
+    return false;
+  });
+  if (admin) {
+    return {
+      kind: 'admin',
+      user: {
+        id: admin.username,
+        displayName: admin.displayName,
+        role: 'ADMIN',
+        roleTitle: 'Campus Safety Administrator',
+        department: 'Command Staff',
+        dutyStation: 'Central Security Desk',
+        identifierCode: admin.username
+      }
+    };
+  }
+
+  if (ident) {
+    const cadet = members.find((member) =>
+      codesMatch(member.identifierCode, ident) ||
+      codesMatch(member.studentIdNumber, ident) ||
+      codesMatch(member.id, ident) ||
+      (member.email && member.email.toLowerCase() === ident.toLowerCase())
+    );
+    if (cadet) {
+      const isOfficer = String(cadet.memberType || '').toUpperCase() === 'OFFICER';
+      return {
+        kind: 'cadet',
+        user: {
+          id: cadet.id,
+          displayName: cadet.displayName,
+          role: 'CADET',
+          roleTitle: cadet.roleTitle || (isOfficer ? 'Duty Officer' : 'Safety Cadet Marshal'),
+          department: cadet.department || 'College of Criminology',
+          dutyStation: cadet.dutyStation || 'Assigned Checkpoint',
+          identifierCode: cadet.identifierCode || cadet.studentIdNumber || cadet.id
+        }
+      };
+    }
+
+    const leader = leaders.find((entry) =>
+      codesMatch(entry.accessCode, ident) ||
+      codesMatch(entry.id, ident) ||
+      (entry.email && entry.email.toLowerCase() === ident.toLowerCase())
+    );
+    if (leader) {
+      return {
+        kind: 'representative',
+        user: {
+          id: leader.id,
+          displayName: leader.displayName,
+          role: 'SCENE_REP',
+          roleTitle: 'Scene Representative',
+          department: leader.department || 'Department Lead',
+          dutyStation: leader.sectionName || 'Department Area',
+          identifierCode: leader.accessCode || leader.id
+        }
+      };
+    }
+  }
+
+  return null;
+}
+
+// ── Session & Cryptographic Token Management ────────────────────────────────
+export const activeSessions = new Map();
+
+export function createSession(user) {
+  const token = 'esecure_sec_' + crypto.randomBytes(24).toString('hex');
+  const sessionData = {
+    token,
+    user: {
+      id: user.id || user.username || 'usr-' + Date.now(),
+      displayName: user.displayName || user.name || 'Campus Security User',
+      role: user.role || 'USER', // 'SUPER_ADMIN', 'ADMIN', 'CADET', 'SCENE_REP'
+      roleTitle: user.roleTitle || 'Security Personnel',
+      department: user.department || 'Safety Operations',
+      dutyStation: user.dutyStation || 'Campus Grounds',
+      identifierCode: user.identifierCode || null
+    },
+    createdAt: Date.now(),
+    expiresAt: Date.now() + (12 * 60 * 60 * 1000) // 12 hours
+  };
+  activeSessions.set(token, sessionData);
+  return sessionData;
+}
+
+export function getSessionFromRequest(req) {
+  const authHeader = req.headers['authorization'] || '';
+  let token = null;
+  if (authHeader.startsWith('Bearer ')) {
+    token = authHeader.slice(7).trim();
+  } else if (req.headers['x-session-token']) {
+    token = String(req.headers['x-session-token']).trim();
+  }
+  if (!token) return null;
+
+  const session = activeSessions.get(token);
+  if (!session) return null;
+  if (Date.now() > session.expiresAt) {
+    activeSessions.delete(token);
+    return null;
+  }
+  return session;
+}
+
+export function revokeSession(token) {
+  return activeSessions.delete(token);
+}
+
+// Strict Admin-Only Attendance Access Guard (full student compliance PII)
 export function checkAttendanceAccess(role) {
   return role === 'ADMIN';
+}
+
+export function inferCurrentShift(date = new Date()) {
+  const hour = date.getHours();
+  if (hour >= 16) return 'PM_OUT';
+  if (hour >= 13) return 'PM_IN';
+  if (hour >= 11) return 'AM_OUT';
+  return 'AM_IN';
+}
+
+export function isSameLocalDay(iso, now = new Date()) {
+  if (!iso) return false;
+  const stamp = new Date(iso);
+  return (
+    stamp.getFullYear() === now.getFullYear() &&
+    stamp.getMonth() === now.getMonth() &&
+    stamp.getDate() === now.getDate()
+  );
+}
+
+export function resolveYearLevel(member) {
+  if (!member) return '3RD_YEAR';
+  if (member.yearLevel) return member.yearLevel;
+  const role = String(member.roleTitle || '').toLowerCase();
+  const sec = String(member.sectionName || '').toUpperCase();
+  if (member.memberType === 'OFFICER' || role.includes('officer') || sec.includes('TACTICAL')) {
+    return 'OFFICER';
+  }
+  if (sec.includes('1-') || sec.includes('CRIM 1') || sec.includes('1ST')) return '1ST_YEAR';
+  if (sec.includes('2-') || sec.includes('CRIM 2') || sec.includes('2ND')) return '2ND_YEAR';
+  if (sec.includes('3-') || sec.includes('CRIM 3') || sec.includes('3RD')) return '3RD_YEAR';
+  if (sec.includes('4-') || sec.includes('CRIM 4') || sec.includes('4TH')) return '4TH_YEAR';
+  return member.memberType === 'STUDENT' ? '3RD_YEAR' : 'OFFICER';
+}
+
+export function findMemberByIdentifier(members, identifier) {
+  const ident = String(identifier || '').trim().toUpperCase();
+  if (!ident) return null;
+  return (members || []).find((member) =>
+    String(member.identifierCode || '').toUpperCase() === ident ||
+    String(member.studentIdNumber || '').toUpperCase() === ident ||
+    String(member.id || '').toUpperCase() === ident ||
+    String(member.displayName || '').toUpperCase() === ident
+  ) || null;
+}
+
+export function buildAttendanceBoard(appState, shiftType) {
+  const shift = shiftType || inferCurrentShift();
+  const rawMembers = appState.members || [];
+  const members = rawMembers.map(m => ({
+    ...m,
+    yearLevel: resolveYearLevel(m)
+  }));
+  const logs = appState.attendanceLogs || [];
+  const todayLogs = logs.filter((entry) => isSameLocalDay(entry.loggedAt));
+  const shiftLogs = todayLogs.filter((entry) => entry.shiftType === shift);
+  const scannedIds = new Set(shiftLogs.map((entry) => entry.memberId));
+
+  const pending = members
+    .filter((member) => !scannedIds.has(member.id))
+    .map((member) => ({
+      id: member.id,
+      displayName: member.displayName,
+      identifierCode: member.identifierCode,
+      studentIdNumber: member.studentIdNumber || member.identifierCode,
+      yearLevel: member.yearLevel,
+      sectionName: member.sectionName || 'General',
+      dutyStation: member.dutyStation || 'Unassigned post',
+      dutyStatus: member.dutyStatus || 'STANDBY',
+      roleTitle: member.roleTitle || 'Personnel',
+      memberType: member.memberType || 'STUDENT'
+    }));
+
+  const onDutyCount = members.filter((member) => member.dutyStatus === 'ON_DUTY').length;
+
+  const levels = ['1ST_YEAR', '2ND_YEAR', '3RD_YEAR', '4TH_YEAR', 'OFFICER'];
+  const levelBreakdown = {};
+  levels.forEach(lvl => {
+    const lvlMembers = members.filter(m => m.yearLevel === lvl);
+    const lvlScanned = lvlMembers.filter(m => scannedIds.has(m.id)).length;
+    levelBreakdown[lvl] = {
+      total: lvlMembers.length,
+      scanned: lvlScanned,
+      pending: lvlMembers.length - lvlScanned,
+      percent: lvlMembers.length > 0 ? Math.round((lvlScanned / lvlMembers.length) * 100) : 0
+    };
+  });
+
+  const memberRoster = members.map(m => {
+    const memberLogs = todayLogs.filter(l => l.memberId === m.id);
+    const compliance = (appState.studentCompliance || []).find(c => c.studentId === m.id);
+    const amInLog = memberLogs.find(l => l.shiftType === 'AM_IN');
+    const amOutLog = memberLogs.find(l => l.shiftType === 'AM_OUT');
+    const pmInLog = memberLogs.find(l => l.shiftType === 'PM_IN');
+    const pmOutLog = memberLogs.find(l => l.shiftType === 'PM_OUT');
+
+    return {
+      id: m.id,
+      displayName: m.displayName,
+      identifierCode: m.identifierCode,
+      studentIdNumber: m.studentIdNumber || m.identifierCode,
+      yearLevel: m.yearLevel,
+      sectionName: m.sectionName || 'General',
+      dutyStation: m.dutyStation || 'Unassigned post',
+      dutyStatus: m.dutyStatus || 'STANDBY',
+      roleTitle: m.roleTitle || 'Personnel',
+      memberType: m.memberType || 'STUDENT',
+      shifts: {
+        amIn: compliance?.amIn || (amInLog ? new Date(amInLog.loggedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : null),
+        amOut: compliance?.amOut || (amOutLog ? new Date(amOutLog.loggedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : null),
+        pmIn: compliance?.pmIn || (pmInLog ? new Date(pmInLog.loggedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : null),
+        pmOut: compliance?.pmOut || (pmOutLog ? new Date(pmOutLog.loggedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : null)
+      },
+      hasScannedCurrentShift: scannedIds.has(m.id),
+      isOverride: memberLogs.some(l => l.isOverride),
+      latestLog: memberLogs[0] || null
+    };
+  });
+
+  return {
+    currentShift: shift,
+    metrics: {
+      totalCadets: members.length,
+      onDutyCount,
+      offDutyCount: members.length - onDutyCount,
+      scannedThisShift: scannedIds.size,
+      pendingThisShift: pending.length,
+      checkedInToday: todayLogs.length,
+      overridesCount: todayLogs.filter(l => l.isOverride).length,
+      levelBreakdown
+    },
+    members: memberRoster,
+    pending,
+    logs: logs.slice(0, 50)
+  };
+}
+
+export function canOperateAttendanceKiosk(role) {
+  const normalized = String(role || '').toUpperCase();
+  return normalized === 'ADMIN' || normalized === 'SUPER_ADMIN' || normalized === 'CADET' || normalized === 'SCENE_REP' || normalized === 'OFFICER';
 }
 
 // Cadet Tactical Contact Mesh Roster (grouped by unit)
@@ -666,8 +1173,12 @@ const MIME_TYPES = {
   '.json': 'application/json; charset=utf-8',
   '.svg': 'image/svg+xml',
   '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
   '.ico': 'image/x-icon',
   '.webp': 'image/webp',
+  '.mp4': 'video/mp4',
+  '.webm': 'video/webm',
   '.woff2': 'font/woff2',
   '.woff': 'font/woff'
 };
@@ -694,13 +1205,13 @@ async function requestHandler(req, res) {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({
       status: "ONLINE",
-      system: "Aegis Security Suite & Multi-Event Management",
+      system: "E-Secure 1.0 & Multi-Event Management",
       databaseTarget: "Google Cloud SQL (PostgreSQL 16+)",
       gcpTelemetry: {
         projectId: "security-l1",
         region: "asia-east2",
         mcpDataAgentKitStatus: "COMPATIBLE",
-        uriPattern: "cloudsql://projects/security-l1/instances/aegis-primary/databases/security_attendance",
+        uriPattern: "cloudsql://projects/security-l1/instances/esecure-primary/databases/security_attendance",
         offlineEdgeSync: "ACTIVE"
       },
       stats: {
@@ -831,24 +1342,193 @@ async function requestHandler(req, res) {
     return;
   }
 
-  // Admin Account Authentication Check
-  if (method === 'POST' && pathname === '/api/admin/login') {
+  // ── Unified Authentication API (one credential set; role assigned server-side) ─
+  if (method === 'POST' && (pathname === '/api/auth/login' || pathname === '/api/admin/login')) {
     try {
-      const { passkey } = await parseJsonBody(req);
-      if (passkey === 'SEC-ADMIN-2026') {
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({
-          success: true,
-          admin: state.adminAccounts[0]
-        }));
-      } else {
-        res.writeHead(401, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: "Invalid Admin Passkey. Access Denied." }));
+      const body = await parseJsonBody(req);
+      const identifier = normAuth(
+        body.identifier ||
+        body.identifierCode ||
+        body.badgeId ||
+        body.studentId ||
+        body.accessCode ||
+        body.username ||
+        body.email ||
+        body.code
+      );
+      const passkey = normAuth(body.passkey || body.password);
+
+      if (!identifier && !passkey) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Enter your access ID or passkey.' }));
+        return;
       }
+
+      const resolved = resolveUnifiedLogin(state, identifier, passkey);
+      if (!resolved) {
+        res.writeHead(401, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Invalid access ID or passkey.' }));
+        return;
+      }
+
+      const session = createSession(resolved.user);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
+        success: true,
+        token: session.token,
+        user: session.user
+      }));
+      return;
     } catch (err) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: err.message }));
+      return;
     }
+  }
+
+  // Session Verification Endpoint
+  if (method === 'GET' && pathname === '/api/auth/session') {
+    const session = getSessionFromRequest(req);
+    if (session) {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ authenticated: true, user: session.user }));
+    } else {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ authenticated: false, error: "No active session." }));
+    }
+    return;
+  }
+
+  // Session Logout Endpoint
+  if (method === 'POST' && pathname === '/api/auth/logout') {
+    const authHeader = req.headers['authorization'] || '';
+    let token = null;
+    if (authHeader.startsWith('Bearer ')) token = authHeader.slice(7).trim();
+    else if (req.headers['x-session-token']) token = String(req.headers['x-session-token']).trim();
+    if (token) revokeSession(token);
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ success: true, message: "Logged out successfully." }));
+    return;
+  }
+
+  // Public User Registration Endpoint (Cadet recruit / Scene rep application)
+  if (method === 'POST' && pathname === '/api/auth/register') {
+    try {
+      const data = await parseJsonBody(req);
+      const newReq = {
+        id: 'req-' + Date.now(),
+        name: data.name || 'New Recruit',
+        email: data.email || 'recruit@campus.edu',
+        requestedRole: data.requestedRole || 'cadet',
+        preferredStation: data.preferredStation || 'Main Gate Entrance',
+        date: 'Just now',
+        status: 'PENDING'
+      };
+      if (!state.pendingRegistrations) state.pendingRegistrations = [];
+      state.pendingRegistrations.unshift(newReq);
+      persistState();
+
+      res.writeHead(201, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
+        success: true,
+        message: "Registration submitted for Administrator verification.",
+        registrationId: newReq.id
+      }));
+      return;
+    } catch (err) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: err.message }));
+      return;
+    }
+  }
+
+  // Admin Pending Registrations List (ADMIN ONLY)
+  if (method === 'GET' && pathname === '/api/admin/registrations') {
+    const session = getSessionFromRequest(req);
+    const legacyRole = (req.headers['x-user-role'] || urlObj.searchParams.get('role') || '').toUpperCase();
+    const isAdmin = (session && (session.user.role === 'SUPER_ADMIN' || session.user.role === 'ADMIN')) || legacyRole === 'ADMIN';
+
+    if (!isAdmin) {
+      res.writeHead(403, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'FORBIDDEN: Admin clearance required to view registration queue.' }));
+      return;
+    }
+
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ registrations: state.pendingRegistrations || [] }));
+    return;
+  }
+
+  // Admin Registration Approval (ADMIN ONLY)
+  if (method === 'POST' && pathname === '/api/admin/registrations/approve') {
+    const session = getSessionFromRequest(req);
+    const legacyRole = (req.headers['x-user-role'] || urlObj.searchParams.get('role') || '').toUpperCase();
+    const isAdmin = (session && (session.user.role === 'SUPER_ADMIN' || session.user.role === 'ADMIN')) || legacyRole === 'ADMIN';
+
+    if (!isAdmin) {
+      res.writeHead(403, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'FORBIDDEN: Admin clearance required to approve registrations.' }));
+      return;
+    }
+
+    try {
+      const { id, assignedRole, assignedStation } = await parseJsonBody(req);
+      const regIndex = (state.pendingRegistrations || []).findIndex(r => r.id === id);
+      if (regIndex === -1) {
+        res.writeHead(404, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: "Registration request not found." }));
+        return;
+      }
+
+      const reg = state.pendingRegistrations[regIndex];
+      reg.status = 'APPROVED';
+      reg.assignedRole = assignedRole || reg.requestedRole;
+      reg.assignedStation = assignedStation || reg.preferredStation;
+
+      // Create new cadet/officer member entry if cadet
+      const newMember = {
+        id: 'm-' + Date.now(),
+        identifierCode: 'CADET-' + Math.floor(1000 + Math.random() * 9000),
+        displayName: reg.name,
+        memberType: reg.assignedRole === 'representative' ? 'DEPT_LEADER' : 'STUDENT',
+        roleTitle: reg.assignedRole === 'representative' ? 'Scene Representative' : 'Safety Cadet Marshal',
+        dutyStation: reg.assignedStation,
+        dutyStatus: 'ON_DUTY',
+        isRescueCertified: false,
+        physicalRating: 3,
+        specialties: ['PATROL'],
+        phone: null,
+        radioChannel: 'TAC-1',
+        assignedUnitId: 'u-101'
+      };
+      state.members.push(newMember);
+      persistState();
+
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
+        success: true,
+        message: `User ${reg.name} approved and assigned to ${newMember.dutyStation}.`,
+        member: newMember,
+        registration: reg
+      }));
+      return;
+    } catch (err) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: err.message }));
+      return;
+    }
+  }
+
+  // ── Public Campus Watch Areas (Zero PII Exposed) ───────────────────────────
+  if (method === 'GET' && pathname === '/api/public/areas') {
+    const publicAreas = [
+      { id: 'area-1', date: 'Active Shift', title: 'Main Gate Entrance', subtitle: 'Visitor Check & Perimeter Gate', progress: 56, isNavy: true, assignedUnit: 'Unit 1 - Alpha Rapid Rescue', sector: 'Sector 1 - North Perimeter' },
+      { id: 'area-2', date: 'Active Shift', title: 'Quadrangle Walkway', subtitle: 'Student Walking Patrol', progress: 46, isNavy: false, assignedUnit: 'Unit 2 - Bravo Extrication', sector: 'Sector 2 - Central Quad' },
+      { id: 'area-3', date: 'Active Shift', title: 'Science Complex', subtitle: 'Hallway & Lab Walkthrough', progress: 87, isNavy: false, assignedUnit: 'Unit 3 - Charlie Command', sector: 'Sector 2 - Central Quad' },
+      { id: 'area-4', date: 'Active Shift', title: 'Administration Building', subtitle: 'Main Office & Entry Doors', progress: 24, isNavy: false, assignedUnit: 'Unit 1 - Alpha Rapid Rescue', sector: 'Sector 3 - South Corridor' }
+    ];
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ areas: publicAreas, campusStatus: 'SECURE_ACTIVE', monitoredGates: 4 }));
     return;
   }
 
@@ -859,8 +1539,18 @@ async function requestHandler(req, res) {
     return;
   }
 
-  // ── Cadet Tactical Contact Mesh (Officers + Admin can view) ───────────────
+  // ── Cadet Tactical Contact Mesh (PROTECTED: Authentication Required) ───────
   if (method === 'GET' && pathname === '/api/cadet-mesh') {
+    const session = getSessionFromRequest(req);
+    const legacyRole = (req.headers['x-user-role'] || urlObj.searchParams.get('role') || '').toUpperCase();
+    const isAuthorized = !!session || legacyRole === 'ADMIN' || legacyRole === 'OFFICER';
+
+    if (!isAuthorized) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'UNAUTHORIZED: Authentication required to view tactical contact mesh.' }));
+      return;
+    }
+
     const roster = getCadetContactRoster(state.members, state.tacticalUnits);
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ mesh: roster, totalUnits: state.tacticalUnits.length }));
@@ -878,50 +1568,90 @@ async function requestHandler(req, res) {
     return;
   }
 
-  // 2. Attendance APIs — ADMIN ONLY
+  // 2. Attendance APIs — authenticated personnel (kiosk / officer level in-charge).
   if (method === 'GET' && pathname === '/api/attendance') {
-    const reqRole = req.headers['x-user-role'] || urlObj.searchParams.get('role') || '';
-    if (!checkAttendanceAccess(reqRole.toUpperCase())) {
-      res.writeHead(403, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: 'FORBIDDEN: Attendance logs are restricted to Admin / Commander only.' }));
+    const session = getSessionFromRequest(req);
+    const legacyRole = (req.headers['x-user-role'] || urlObj.searchParams.get('role') || '').toUpperCase();
+    const role = session?.user?.role || legacyRole;
+    if (!session && !canOperateAttendanceKiosk(legacyRole)) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'UNAUTHORIZED: Sign in to open the attendance desk.' }));
       return;
     }
-    const onDutyCount = state.members.filter(m => m.dutyStatus === 'ON_DUTY').length;
+    if (session && !canOperateAttendanceKiosk(session.user.role) && !canOperateAttendanceKiosk(legacyRole)) {
+      res.writeHead(403, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'FORBIDDEN: Attendance desk is limited to assigned personnel.' }));
+      return;
+    }
+
+    const requestedShift = (urlObj.searchParams.get('shift') || '').toUpperCase();
+    const board = buildAttendanceBoard(state, ['AM_IN', 'AM_OUT', 'PM_IN', 'PM_OUT'].includes(requestedShift) ? requestedShift : inferCurrentShift());
+    const isAdmin = checkAttendanceAccess(role) || role === 'SUPER_ADMIN';
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({
-      logs: state.attendanceLogs.slice(0, 50),
-      metrics: {
-        totalCadets: state.members.length,
-        onDutyCount,
-        offDutyCount: state.members.length - onDutyCount,
-        checkedInToday: state.attendanceLogs.length
-      }
+      currentShift: board.currentShift,
+      logs: board.logs,
+      pending: isAdmin ? board.pending : board.pending.map(({ id, displayName, identifierCode, studentIdNumber, yearLevel, sectionName, dutyStation, dutyStatus, roleTitle, memberType }) => ({
+        id, displayName, identifierCode, studentIdNumber, yearLevel, sectionName, dutyStation, dutyStatus, roleTitle, memberType
+      })),
+      members: board.members,
+      metrics: board.metrics,
+      monitor: isAdmin
     }));
     return;
   }
 
-  if (method === 'POST' && pathname === '/api/attendance/check-in') {
+  if (method === 'POST' && (pathname === '/api/attendance/check-in' || pathname === '/api/attendance/override')) {
     try {
-      const data = await parseJsonBody(req);
-      const member = state.members.find(m => 
-        m.id === data.memberId || m.identifierCode === data.identifierCode
-      );
-
-      if (!member) {
-        res.writeHead(404, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: "Cadet / Member identifier not found in security registry." }));
+      const session = getSessionFromRequest(req);
+      const legacyRole = (req.headers['x-user-role'] || '').toUpperCase();
+      if (!session && !canOperateAttendanceKiosk(legacyRole)) {
+        res.writeHead(401, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'UNAUTHORIZED: Sign in before recording attendance.' }));
         return;
       }
 
-      const currentHour = new Date().getHours();
-      let defaultShift = "AM_IN";
-      if (currentHour >= 11 && currentHour < 13) defaultShift = "AM_OUT";
-      else if (currentHour >= 13 && currentHour < 16) defaultShift = "PM_IN";
-      else if (currentHour >= 16) defaultShift = "PM_OUT";
+      const data = await parseJsonBody(req);
+      const member = findMemberByIdentifier(state.members, data.identifierCode || data.memberId || data.badgeId || data.studentIdNumber || data.displayName || data.name);
 
-      const shiftType = data.shiftType || defaultShift;
-      const eventType = data.eventType || (shiftType.endsWith("_OUT") ? "CHECK_OUT" : "CHECK_IN");
+      if (!member) {
+        res.writeHead(404, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Student, cadet, or officer not found in the campus registry.' }));
+        return;
+      }
+
+      const shiftType = data.shiftType || inferCurrentShift();
+      const eventType = data.eventType || (String(shiftType).endsWith('_OUT') ? 'CHECK_OUT' : 'CHECK_IN');
+      const isOverride = Boolean(data.override) || pathname === '/api/attendance/override';
+      const overrideReason = data.overrideReason || (isOverride ? 'Manual Officer Override' : null);
+      const officerDisplayName = session?.user?.displayName || data.recordedBy || 'Duty Officer';
+
+      const existingIndex = (state.attendanceLogs || []).findIndex((entry) =>
+        entry.memberId === member.id && entry.shiftType === shiftType && isSameLocalDay(entry.loggedAt)
+      );
+
+      if (existingIndex !== -1 && !isOverride) {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
+          success: true,
+          duplicate: true,
+          canOverride: true,
+          message: `${member.displayName} is already recorded for ${shiftType.replace('_', ' ')} today. Use override to adjust.`,
+          log: state.attendanceLogs[existingIndex],
+          member: {
+            id: member.id,
+            displayName: member.displayName,
+            identifierCode: member.identifierCode,
+            dutyStation: member.dutyStation,
+            dutyStatus: member.dutyStatus
+          }
+        }));
+        return;
+      }
+
       member.dutyStatus = eventType === 'CHECK_IN' ? 'ON_DUTY' : 'OFF_DUTY';
+
+      const timeDisplay = data.customTime || new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
       const logEntry = {
         id: `att-${Date.now()}`,
@@ -930,15 +1660,21 @@ async function requestHandler(req, res) {
         identifierCode: member.identifierCode,
         shiftType,
         eventType,
-        verificationMethod: data.verificationMethod || "QR_CODE",
-        verificationLatencyMs: data.verificationLatencyMs || Math.floor(Math.random() * 80 + 70),
-        terminalCode: data.terminalCode || "KIOSK-MAIN-SEC",
+        verificationMethod: isOverride ? 'MANUAL_OVERRIDE' : (data.verificationMethod || 'MANUAL_OFFICER_DESK'),
+        verificationLatencyMs: isOverride ? 0 : (data.verificationLatencyMs || Math.floor(Math.random() * 80 + 70)),
+        terminalCode: data.terminalCode || (isOverride ? 'OFFICER-OVERRIDE-DESK' : 'KIOSK-MAIN-SEC'),
+        recordedBy: officerDisplayName,
+        isOverride: isOverride,
+        overrideReason: overrideReason,
         loggedAt: new Date().toISOString()
       };
 
-      state.attendanceLogs.unshift(logEntry);
+      if (existingIndex !== -1 && isOverride) {
+        state.attendanceLogs[existingIndex] = logEntry;
+      } else {
+        state.attendanceLogs.unshift(logEntry);
+      }
 
-      // Automatically sync student event compliance if member is student
       if (member.memberType === 'STUDENT') {
         const activeEvt = state.events.find(e => e.id === (data.eventId || state.activeEventId));
         updateStudentCompliance(
@@ -946,19 +1682,32 @@ async function requestHandler(req, res) {
           member.id,
           data.eventId || state.activeEventId,
           shiftType,
-          new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+          timeDisplay,
           activeEvt?.mandatoryShifts
         );
       }
 
       persistState();
+      const board = buildAttendanceBoard(state, shiftType);
 
-      res.writeHead(201, { 'Content-Type': 'application/json' });
+      res.writeHead(existingIndex !== -1 ? 200 : 201, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({
         success: true,
-        message: `${member.displayName} successfully logged: ${eventType}`,
+        overridden: isOverride,
+        message: isOverride
+          ? `[OVERRIDE RECORDED] ${member.displayName} set to ${shiftType.replace('_', ' ')} (${overrideReason}) by ${officerDisplayName}.`
+          : `${member.displayName} recorded for ${shiftType.replace('_', ' ')}.`,
         log: logEntry,
-        member
+        metrics: board.metrics,
+        pending: board.pending,
+        members: board.members,
+        member: {
+          id: member.id,
+          displayName: member.displayName,
+          identifierCode: member.identifierCode,
+          dutyStation: member.dutyStation,
+          dutyStatus: member.dutyStatus
+        }
       }));
     } catch (err) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -1053,10 +1802,40 @@ async function requestHandler(req, res) {
     return;
   }
 
-  // 4. Cadets / Members API
+  // 4. Cadets / Members API - PROTECTED (Authentication Required)
   if (method === 'GET' && pathname === '/api/members') {
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ members: state.members }));
+    const session = getSessionFromRequest(req);
+    const legacyRole = (req.headers['x-user-role'] || urlObj.searchParams.get('role') || '').toUpperCase();
+    const isAdmin = (session && (session.user.role === 'SUPER_ADMIN' || session.user.role === 'ADMIN')) || legacyRole === 'ADMIN';
+
+    if (!session && !isAdmin) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'UNAUTHORIZED: Authentication required to access campus member roster.' }));
+      return;
+    }
+
+    if (isAdmin) {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ members: state.members }));
+    } else {
+      // Non-admins (e.g. Officers/Cadets) get sanitized roster: NO personal phone numbers
+      const sanitized = state.members.map(m => ({
+        id: m.id,
+        displayName: m.displayName,
+        identifierCode: m.identifierCode,
+        studentIdNumber: m.studentIdNumber || m.identifierCode,
+        yearLevel: resolveYearLevel(m),
+        sectionName: m.sectionName || 'General',
+        memberType: m.memberType || 'STUDENT',
+        roleTitle: m.roleTitle,
+        assignedUnitId: m.assignedUnitId,
+        dutyStation: m.dutyStation,
+        dutyStatus: m.dutyStatus,
+        specialties: m.specialties || []
+      }));
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ members: sanitized }));
+    }
     return;
   }
 
@@ -1234,8 +2013,18 @@ async function requestHandler(req, res) {
     return;
   }
 
-  // Admin Reports Feed
+  // Admin Reports Feed (ADMIN ONLY)
   if (method === 'GET' && pathname === '/api/reports/admin') {
+    const session = getSessionFromRequest(req);
+    const legacyRole = (req.headers['x-user-role'] || urlObj.searchParams.get('role') || '').toUpperCase();
+    const isAdmin = (session && (session.user.role === 'SUPER_ADMIN' || session.user.role === 'ADMIN')) || legacyRole === 'ADMIN';
+
+    if (!isAdmin) {
+      res.writeHead(403, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'FORBIDDEN: Administrative clearance required to view incident feeds.' }));
+      return;
+    }
+
     const enrichedReports = state.anonymousReports.map(r => {
       const unit = r.assignedUnitId ? state.tacticalUnits.find(u => u.id === r.assignedUnitId) : null;
       return {
@@ -1257,8 +2046,18 @@ async function requestHandler(req, res) {
     return;
   }
 
-  // Admin Update / Dispatch Report
+  // Admin Update / Dispatch Report (ADMIN ONLY)
   if (method === 'PATCH' && pathname.startsWith('/api/reports/admin/')) {
+    const session = getSessionFromRequest(req);
+    const legacyRole = (req.headers['x-user-role'] || urlObj.searchParams.get('role') || '').toUpperCase();
+    const isAdmin = (session && (session.user.role === 'SUPER_ADMIN' || session.user.role === 'ADMIN')) || legacyRole === 'ADMIN';
+
+    if (!isAdmin) {
+      res.writeHead(403, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'FORBIDDEN: Administrative clearance required to update incident reports.' }));
+      return;
+    }
+
     try {
       const reportId = pathname.replace('/api/reports/admin/', '');
       const report = state.anonymousReports.find(r => r.id === reportId);
@@ -1301,7 +2100,32 @@ async function requestHandler(req, res) {
   if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
     const ext = path.extname(filePath).toLowerCase();
     const contentType = MIME_TYPES[ext] || 'application/octet-stream';
-    res.writeHead(200, { 'Content-Type': contentType });
+    const stat = fs.statSync(filePath);
+    const fileSize = stat.size;
+    const range = req.headers.range;
+
+    if (range && (ext === '.mp4' || ext === '.webm')) {
+      const parts = range.replace(/bytes=/, "").split("-");
+      const start = parseInt(parts[0], 10);
+      const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+      const chunksize = (end - start) + 1;
+      const file = fs.createReadStream(filePath, { start, end });
+      const head = {
+        'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+        'Accept-Ranges': 'bytes',
+        'Content-Length': chunksize,
+        'Content-Type': contentType,
+      };
+      res.writeHead(206, head);
+      file.pipe(res);
+      return;
+    }
+
+    res.writeHead(200, {
+      'Content-Length': fileSize,
+      'Content-Type': contentType,
+      'Accept-Ranges': 'bytes'
+    });
     fs.createReadStream(filePath).pipe(res);
     return;
   }
@@ -1327,12 +2151,18 @@ process.on('SIGINT', () => {
 // Start Server if executed directly
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   server.listen(PORT, () => {
-    console.log(`[Aegis Tactical Server] Running at http://localhost:${PORT}`);
+    console.log(`[E-Secure 1.0 Tactical Server] Running at http://localhost:${PORT}`);
     console.log(`[Database Target] Google Cloud SQL (PostgreSQL 16+) / Project: security-l1`);
     console.log(`[Reference Pattern] POD-AI Concern anonymous reporting + Group Rescue Balancing`);
   });
 }
 
 // computeUnitReadiness, autoBalanceUnits, updateStudentCompliance, validateFiveWs,
-// generateGovDossier, checkAttendanceAccess, getCadetContactRoster are exported inline above
-export { server, requestHandler, state, generateReferenceCode };
+// generateGovDossier, checkAttendanceAccess, getCadetContactRoster,
+// createSession, getSessionFromRequest, revokeSession are exported inline above
+export { 
+  server, 
+  requestHandler, 
+  state, 
+  generateReferenceCode 
+};
