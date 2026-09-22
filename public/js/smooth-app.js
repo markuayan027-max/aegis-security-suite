@@ -350,31 +350,48 @@
 
   // ── Render Orchestrator ──
   function render() {
-    root.innerHTML = `
-      ${renderAppHeader()}
+    if (state.isAuthenticated && state.view !== 'home' && state.view !== 'auth') {
+      root.innerHTML = `
+        ${renderAuthenticatedLayout()}
 
-      <!-- Toast Notification -->
-      ${state.toastMessage ? `
-        <div class="toast-notification-banner">
-          <span class="toast-check-icon">✓</span>
-          <span>${state.toastMessage}</span>
-        </div>
-      ` : ''}
+        <!-- Toast Notification -->
+        ${state.toastMessage ? `
+          <div class="toast-notification-banner">
+            <span class="toast-check-icon">✓</span>
+            <span>${state.toastMessage}</span>
+          </div>
+        ` : ''}
 
-      <!-- Dynamic View Surface -->
-      <main class="app-main-surface">
-        ${renderCurrentView()}
-      </main>
+        <!-- Quick Incident Help Modal -->
+        ${state.isReportModalOpen ? renderReportModal() : ''}
 
-      <!-- Quick Incident Help Modal -->
-      ${state.isReportModalOpen ? renderReportModal() : ''}
+        <!-- Fast Attendance Override Modal -->
+        ${state.overrideModal && state.overrideModal.isOpen ? renderAttendanceOverrideModal() : ''}
 
-      <!-- Fast Attendance Override Modal -->
-      ${state.overrideModal && state.overrideModal.isOpen ? renderAttendanceOverrideModal() : ''}
+        <!-- Attendance Excel / CSV Export Modal -->
+        ${state.exportModal && state.exportModal.isOpen ? renderAttendanceExportModal() : ''}
+      `;
+    } else {
+      root.innerHTML = `
+        ${renderAppHeader()}
 
-      <!-- Attendance Excel / CSV Export Modal -->
-      ${state.exportModal && state.exportModal.isOpen ? renderAttendanceExportModal() : ''}
-    `;
+        <!-- Toast Notification -->
+        ${state.toastMessage ? `
+          <div class="toast-notification-banner">
+            <span class="toast-check-icon">✓</span>
+            <span>${state.toastMessage}</span>
+          </div>
+        ` : ''}
+
+        <!-- Dynamic View Surface -->
+        <main class="app-main-surface">
+          ${renderCurrentView()}
+        </main>
+
+        <!-- Quick Incident Help Modal -->
+        ${state.isReportModalOpen ? renderReportModal() : ''}
+      `;
+    }
 
     attachEvents();
   }
@@ -1454,112 +1471,319 @@
     `;
   }
 
-  // ── 5. SAFETY CONSOLE (Protected Dashboard with Arun Dass Dashboard Sidebar) ──
-  function renderDashboard() {
-    const user = state.activeUser || { displayName: 'Authorized Officer', roleTitle: 'Safety Personnel', dutyStation: 'Security Desk' };
+  // ── 5. ARUN DASS DASHBOARD SIDEBAR & AUTHENTICATED WORKSPACE SHELL ──
+  // Based on @21st-dev arunjdass/dashboard-sidebar (Charcoal Ink & Alabaster palette)
+  function renderArunSidebar() {
+    const user = state.activeUser || { displayName: 'Authorized Officer', roleTitle: 'Safety Personnel' };
     const isCollapsed = Boolean(state.sidebarCollapsed);
     const pendingCount = (state.pendingSignups || []).length;
-    const onDutyCount = state.attendanceMetrics.onDutyCount || 0;
+    const onDutyCount = state.attendanceMetrics?.onDutyCount || 0;
 
     return `
-      <div class="dashboard-layout-shell">
-        <!-- Arun Dass Dashboard Sidebar Shell (21st.dev/arunjdass/dashboard-sidebar) -->
-        <aside class="arun-dashboard-sidebar ${isCollapsed ? 'collapsed' : ''}" id="app-dashboard-sidebar">
-          <div>
-            <!-- Sidebar Header -->
-            <div class="sidebar-header-bar">
-              <div class="sidebar-brand-group">
-                <div class="sidebar-brand-icon">E1</div>
-                <div class="sidebar-brand-info">
-                  <span class="sidebar-app-name">E-SECURE 1.0</span>
-                  <span class="sidebar-app-tag">Campus Safety Suite</span>
-                </div>
+      <aside class="arun-dashboard-sidebar ${isCollapsed ? 'collapsed' : ''}" id="app-dashboard-sidebar">
+        <div>
+          <!-- Sidebar Header -->
+          <div class="sidebar-header-bar">
+            <div class="sidebar-brand-group">
+              <div class="sidebar-brand-icon">E1</div>
+              <div class="sidebar-brand-info">
+                <span class="sidebar-app-name">E-SECURE 1.0</span>
+                <span class="sidebar-app-tag">Campus Safety Suite</span>
               </div>
-              <button type="button" class="sidebar-collapse-trigger" id="dashboard-sidebar-toggle" title="${isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}">
-                ${isCollapsed ? '▶' : '◀'}
+            </div>
+            <button type="button" class="sidebar-collapse-trigger" id="dashboard-sidebar-toggle" title="${isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}">
+              ${isCollapsed ? '▶' : '◀'}
+            </button>
+          </div>
+
+          <!-- Multi-Tier Navigation -->
+          <div class="sidebar-nav-scroll">
+            <!-- Tier 1: Operations -->
+            <div class="sidebar-tier-group">
+              <div class="sidebar-tier-heading">Operations</div>
+              <button type="button" class="sidebar-menu-btn ${state.view === 'attendance' ? 'active' : ''}" data-nav-view="attendance" title="Attendance Command Desk">
+                <span class="menu-icon">📋</span>
+                <span class="menu-label">Attendance Desk</span>
+                <span class="menu-badge">${onDutyCount} On Duty</span>
+              </button>
+              <button type="button" class="sidebar-menu-btn ${state.view === 'dashboard' ? 'active' : ''}" data-nav-view="dashboard" title="Dashboard Console Overview">
+                <span class="menu-icon">📊</span>
+                <span class="menu-label">Console Overview</span>
+              </button>
+              ${isAdminUser() ? `
+                <button type="button" class="sidebar-menu-btn ${state.view === 'approvals' ? 'active' : ''}" data-nav-view="approvals" title="Role Approvals">
+                  <span class="menu-icon">🛡️</span>
+                  <span class="menu-label">Role Approvals</span>
+                  ${pendingCount > 0 ? `<span class="menu-badge" style="background:#fee2e2;color:#dc2626;">${pendingCount}</span>` : ''}
+                </button>
+              ` : ''}
+            </div>
+
+            <!-- Tier 2: Safety & Dispatch -->
+            <div class="sidebar-tier-group">
+              <div class="sidebar-tier-heading">Security & Dispatch</div>
+              <button type="button" class="sidebar-menu-btn ${state.view === 'checkpoints' ? 'active' : ''}" data-nav-view="checkpoints" title="Campus Checkpoints">
+                <span class="menu-icon">📍</span>
+                <span class="menu-label">Active Sectors</span>
+                <span class="menu-badge">4 Active</span>
+              </button>
+              <button type="button" class="sidebar-menu-btn" id="dash-side-alert-btn" title="Transmit Emergency Alert">
+                <span class="menu-icon">⚡</span>
+                <span class="menu-label">Emergency Alert</span>
+              </button>
+              <button type="button" class="sidebar-menu-btn ${state.view === 'hotlines' ? 'active' : ''}" data-nav-view="hotlines" title="Campus Hotlines">
+                <span class="menu-icon">📞</span>
+                <span class="menu-label">Direct Hotlines</span>
               </button>
             </div>
 
-            <!-- Multi-Tier Navigation -->
-            <div class="sidebar-nav-scroll">
-              <!-- Tier 1: Operations -->
-              <div class="sidebar-tier-group">
-                <div class="sidebar-tier-heading">Operations</div>
-                <button type="button" class="sidebar-menu-btn active" data-nav-view="dashboard" title="Dashboard Console">
-                  <span class="menu-icon">📊</span>
-                  <span class="menu-label">Console Overview</span>
+            <!-- Tier 3: Reports & System -->
+            <div class="sidebar-tier-group">
+              <div class="sidebar-tier-heading">Reports & Data</div>
+              ${isAdminUser() ? `
+                <button type="button" class="sidebar-menu-btn" id="dash-side-export-btn" title="Export Excel Report">
+                  <span class="menu-icon">📥</span>
+                  <span class="menu-label">Turnout Report (.xlsx)</span>
                 </button>
-                <button type="button" class="sidebar-menu-btn" data-nav-view="attendance" title="Attendance Muster Desk">
-                  <span class="menu-icon">📋</span>
-                  <span class="menu-label">Attendance Desk</span>
-                  <span class="menu-badge">${onDutyCount} On Duty</span>
-                </button>
-                ${isAdminUser() ? `
-                  <button type="button" class="sidebar-menu-btn" data-nav-view="approvals" title="Role Approvals">
-                    <span class="menu-icon">🛡️</span>
-                    <span class="menu-label">Role Approvals</span>
-                    ${pendingCount > 0 ? `<span class="menu-badge" style="background:#fee2e2;color:#dc2626;">${pendingCount}</span>` : ''}
-                  </button>
-                ` : ''}
+              ` : ''}
+              <div class="sidebar-menu-btn" style="cursor: default; opacity: 0.85;" title="Database: Encrypted Edge Store">
+                <span class="menu-icon">🔒</span>
+                <span class="menu-label" style="font-size: 12px; color: #71717a;">Cloud SQL Encrypted</span>
               </div>
+            </div>
+          </div>
+        </div>
 
-              <!-- Tier 2: Safety & Dispatch -->
-              <div class="sidebar-tier-group">
-                <div class="sidebar-tier-heading">Security & Dispatch</div>
-                <button type="button" class="sidebar-menu-btn" data-nav-link="checkpoints" title="Campus Checkpoints">
-                  <span class="menu-icon">📍</span>
-                  <span class="menu-label">Active Sectors</span>
-                  <span class="menu-badge">4 Active</span>
-                </button>
-                <button type="button" class="sidebar-menu-btn" id="dash-side-alert-btn" title="Transmit Emergency Alert">
-                  <span class="menu-icon">⚡</span>
-                  <span class="menu-label">Emergency Alert</span>
-                </button>
-                <button type="button" class="sidebar-menu-btn" data-nav-link="hotlines" title="Campus Hotlines">
-                  <span class="menu-icon">📞</span>
-                  <span class="menu-label">Direct Hotlines</span>
-                </button>
+        <!-- User Profile Footer -->
+        <div class="sidebar-profile-card">
+          <div class="sidebar-user-avatar">
+            ${escapeAttr(user.displayName.split(' ').map(n => n[0]).join('').slice(0, 2))}
+          </div>
+          <div class="sidebar-user-meta">
+            <span class="sidebar-user-name">${escapeAttr(user.displayName)}</span>
+            <span class="sidebar-user-role">${escapeAttr(user.roleTitle || 'Campus Safety')}</span>
+          </div>
+          <button type="button" class="sidebar-signout-btn" id="app-side-signout-btn" title="Sign Out">
+            ⏻
+          </button>
+        </div>
+      </aside>
+    `;
+  }
+
+  function renderDashboardConsole() {
+    const user = state.activeUser || { displayName: 'Authorized Officer', roleTitle: 'Safety Personnel', dutyStation: 'Security Desk' };
+    return `
+      <!-- Greeting & Station Banner -->
+      <div class="console-hero-banner" style="margin-bottom: 24px;">
+        <div>
+          <h2 class="console-greeting-title">
+            Good day, ${user.displayName}
+          </h2>
+          <p class="console-greeting-sub">
+            Role: <strong>${user.roleTitle}</strong> • Station: <strong>${user.dutyStation}</strong>
+          </p>
+        </div>
+
+        <div class="console-action-pills">
+          <button class="console-pill-btn primary" data-nav-view="attendance">
+            Open Attendance Desk
+          </button>
+          ${isAdminUser() ? `
+            <button class="console-pill-btn secondary" data-nav-view="approvals">
+              Approvals (${state.pendingSignups.length})
+            </button>
+          ` : ''}
+        </div>
+      </div>
+
+      <!-- 4 KPI Metrics -->
+      <div class="metrics-four-grid console-attendance-strip" style="margin-bottom: 28px;">
+        <button type="button" class="metric-card metric-card-button" data-nav-view="attendance">
+          <span class="metric-title">On duty</span>
+          <div class="metric-number">${state.attendanceMetrics.onDutyCount || 0}</div>
+          <span class="metric-note">Live check-in count</span>
+        </button>
+        <button type="button" class="metric-card metric-card-button" data-nav-view="attendance">
+          <span class="metric-title">This shift</span>
+          <div class="metric-number">${state.attendanceMetrics.scannedThisShift || 0}</div>
+          <span class="metric-note">${shiftLabel(state.selectedShift || state.currentShift)}</span>
+        </button>
+        <button type="button" class="metric-card metric-card-button metric-card-alert" data-nav-view="attendance">
+          <span class="metric-title">Still out</span>
+          <div class="metric-number">${state.attendanceMetrics.pendingThisShift || (state.attendancePending || []).length}</div>
+          <span class="metric-note">Needs a scan</span>
+        </button>
+        <button type="button" class="metric-card metric-card-button" data-nav-view="attendance">
+          <span class="metric-title">Today</span>
+          <div class="metric-number">${state.attendanceMetrics.checkedInToday || 0}</div>
+          <span class="metric-note">Total records</span>
+        </button>
+      </div>
+
+      <!-- Two Column Operational Layout -->
+      <div class="console-dashboard-grid">
+        <!-- Left Column: Ongoing Watch Areas -->
+        <div>
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+            <h3 style="font-size: 17px; font-weight: 800; color: #18181b;">Active Campus Watch Sectors</h3>
+            <span style="font-size: 12.5px; font-weight: 600; color: #71717a;">4 Checkpoints Active</span>
+          </div>
+
+          <div class="areas-2x2-grid">
+            ${state.areas.map(area => `
+              <div class="area-patrol-card">
+                <div>
+                  <span class="area-date-tag">${area.date} • ${area.sector}</span>
+                  <h4 class="area-title-text">${area.title}</h4>
+                  <p class="area-sub-text">${area.subtitle}</p>
+                  <div style="font-size: 12px; margin-top: 8px; color: #52525b;">Assigned: <strong>${area.assignedUnit}</strong></div>
+                </div>
+
+                <div class="area-progress-wrapper">
+                  <div class="area-progress-bar-bg">
+                    <div class="area-progress-bar-fill" style="width: ${area.progress}%;"></div>
+                  </div>
+                  <div class="area-progress-info">
+                    <span>Shift Coverage</span>
+                    <span>${area.progress}%</span>
+                  </div>
+                </div>
               </div>
+            `).join('')}
+          </div>
+        </div>
 
-              <!-- Tier 3: Reports & System -->
-              <div class="sidebar-tier-group">
-                <div class="sidebar-tier-heading">Reports & Data</div>
-                ${isAdminUser() ? `
-                  <button type="button" class="sidebar-menu-btn" id="dash-side-export-btn" title="Export Excel Report">
-                    <span class="menu-icon">📥</span>
-                    <span class="menu-label">Turnout Report (.xlsx)</span>
-                  </button>
-                ` : ''}
-                <div class="sidebar-menu-btn" style="cursor: default; opacity: 0.85;" title="Database: Encrypted Edge Store">
-                  <span class="menu-icon">🔒</span>
-                  <span class="menu-label" style="font-size: 12px; color: #71717a;">Cloud SQL Encrypted</span>
+        <!-- Right Column: Operational Tasks Checklist -->
+        <div>
+          <div class="tasks-card-container">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+              <h3 style="font-size: 16px; font-weight: 800; color: #18181b;">Shift Protocols</h3>
+              <span style="font-size: 12.5px; font-weight: 600; color: #71717a;">
+                ${state.tasks.filter(t => t.done).length}/${state.tasks.length} Completed
+              </span>
+            </div>
+
+            <div class="tasks-list-scroll">
+              ${state.tasks.map(task => `
+                <div class="task-item-card ${task.done ? 'done' : ''}">
+                  <input type="checkbox" class="task-checkbox-custom" data-task-id="${task.id}" ${task.done ? 'checked' : ''} />
+                  <div style="flex: 1;">
+                    <div class="task-title-text">${task.title}</div>
+                    <div class="task-meta-row">
+                      <span class="task-due-tag">${task.due}</span>
+                      ${task.isUrgent ? '<span class="task-urgent-badge">Urgent</span>' : ''}
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderWatchSectorsView() {
+    return `
+      <section class="safety-console-canvas" style="padding: 0;">
+        <div class="page-title-strip">
+          <div>
+            <h1 class="page-main-heading">Active Campus Watch Sectors</h1>
+            <p class="page-sub-heading">Real-time sector coverage telemetry across all designated university zones.</p>
+          </div>
+        </div>
+        <div class="areas-2x2-grid" style="margin-top: 20px;">
+          ${state.areas.map(area => `
+            <div class="area-patrol-card">
+              <div>
+                <span class="area-date-tag">${area.date} • ${area.sector}</span>
+                <h4 class="area-title-text">${area.title}</h4>
+                <p class="area-sub-text">${area.subtitle}</p>
+                <div style="font-size: 12px; margin-top: 8px; color: #52525b;">Assigned: <strong>${area.assignedUnit}</strong></div>
+              </div>
+              <div class="area-progress-wrapper">
+                <div class="area-progress-bar-bg">
+                  <div class="area-progress-bar-fill" style="width: ${area.progress}%;"></div>
+                </div>
+                <div class="area-progress-info">
+                  <span>Shift Coverage</span>
+                  <span>${area.progress}%</span>
                 </div>
               </div>
             </div>
-          </div>
+          `).join('')}
+        </div>
+      </section>
+    `;
+  }
 
-          <!-- User Profile Footer -->
-          <div class="sidebar-profile-card">
-            <div class="sidebar-user-avatar">
-              ${escapeAttr(user.displayName.split(' ').map(n => n[0]).join('').slice(0, 2))}
-            </div>
-            <div class="sidebar-user-meta">
-              <span class="sidebar-user-name">${escapeAttr(user.displayName)}</span>
-              <span class="sidebar-user-role">${escapeAttr(user.roleTitle)}</span>
-            </div>
-            <button type="button" class="sidebar-signout-btn" id="app-side-signout-btn" title="Sign Out">
-              ⏻
-            </button>
+  function renderHotlinesView() {
+    const hotlines = state.hotlines || [
+      { name: 'Campus Command Center', phone: '(02) 8888-2026', agency: 'CAMPUS_SECURITY', deskNote: '24/7 Central Dispatch Desk' },
+      { name: 'Medical Emergency Post', phone: '(02) 8888-2027', agency: 'MEDICAL_EMS', deskNote: 'First Aid & Triage Station' },
+      { name: 'Bureau of Fire Protection', phone: '(02) 8888-2028', agency: 'FIRE_DISPATCH', deskNote: 'University Egress & Hazard Unit' },
+      { name: 'Campus Marshal Support', phone: '(02) 8888-2029', agency: 'SECURITY_SUPPORT', deskNote: 'Night Patrol & Escort Desk' }
+    ];
+    return `
+      <section class="safety-console-canvas" style="padding: 0;">
+        <div class="page-title-strip">
+          <div>
+            <h1 class="page-main-heading">Direct Campus Hotlines</h1>
+            <p class="page-sub-heading">Immediate emergency dispatch telephone connections across university units.</p>
           </div>
-        </aside>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 20px;">
+          ${hotlines.map(h => `
+            <div class="content-surface" style="padding: 20px;">
+              <span class="surface-badge" style="margin-bottom: 8px; display: inline-block;">${escapeAttr(h.agency)}</span>
+              <h3 style="font-size: 16px; font-weight: 700; color: #18181b;">${escapeAttr(h.name)}</h3>
+              <p style="font-size: 13px; color: #71717a; margin: 4px 0 14px;">${escapeAttr(h.deskNote)}</p>
+              <a href="tel:${escapeAttr(h.phone)}" class="btn-secondary" style="display: inline-flex; align-items: center; gap: 6px; text-decoration: none; font-weight: 700; color: #18181b;">
+                📞 ${escapeAttr(h.phone)}
+              </a>
+            </div>
+          `).join('')}
+        </div>
+      </section>
+    `;
+  }
 
-        <!-- Main Workspace Frame -->
+  // ── Authenticated Global Layout (Arun Dass Dashboard Sidebar Shell) ──
+  function renderAuthenticatedLayout() {
+    const user = state.activeUser || { displayName: 'Authorized Officer', roleTitle: 'Safety Personnel' };
+    const viewLabels = {
+      attendance: 'Attendance Command Desk',
+      dashboard: 'Safety Console Overview',
+      approvals: 'Role Approvals',
+      checkpoints: 'Campus Watch Sectors',
+      hotlines: 'Campus Hotlines Directory'
+    };
+    const breadcrumbLabel = viewLabels[state.view] || 'Operations';
+
+    let bodyHtml = '';
+    if (state.view === 'attendance') {
+      bodyHtml = renderAttendanceKiosk();
+    } else if (state.view === 'approvals') {
+      bodyHtml = renderApprovalsPanel();
+    } else if (state.view === 'checkpoints') {
+      bodyHtml = renderWatchSectorsView();
+    } else if (state.view === 'hotlines') {
+      bodyHtml = renderHotlinesView();
+    } else {
+      bodyHtml = renderDashboardConsole();
+    }
+
+    return `
+      <div class="dashboard-layout-shell">
+        ${renderArunSidebar()}
+
         <main class="dashboard-workspace-frame">
           <div class="workspace-top-bar">
             <div class="workspace-breadcrumbs">
               <span>Campus Safety</span>
               <span>/</span>
-              <span>Safety Console</span>
+              <span>${breadcrumbLabel}</span>
               <span>/</span>
               <strong>${escapeAttr(user.displayName)}</strong>
             </div>
@@ -1579,113 +1803,7 @@
             </div>
           </div>
 
-          <!-- Greeting & Station Banner -->
-          <div class="console-hero-banner" style="margin-bottom: 24px;">
-            <div>
-              <h2 class="console-greeting-title">
-                Good day, ${user.displayName}
-              </h2>
-              <p class="console-greeting-sub">
-                Role: <strong>${user.roleTitle}</strong> • Station: <strong>${user.dutyStation}</strong>
-              </p>
-            </div>
-
-            <div class="console-action-pills">
-              <button class="console-pill-btn primary" data-nav-view="attendance">
-                Open Attendance Desk
-              </button>
-              ${isAdminUser() ? `
-                <button class="console-pill-btn secondary" data-nav-view="approvals">
-                  Approvals (${state.pendingSignups.length})
-                </button>
-              ` : ''}
-            </div>
-          </div>
-
-          <!-- 4 KPI Metrics -->
-          <div class="metrics-four-grid console-attendance-strip" style="margin-bottom: 28px;">
-            <button type="button" class="metric-card metric-card-button" data-nav-view="attendance">
-              <span class="metric-title">On duty</span>
-              <div class="metric-number">${state.attendanceMetrics.onDutyCount || 0}</div>
-              <span class="metric-note">Live check-in count</span>
-            </button>
-            <button type="button" class="metric-card metric-card-button" data-nav-view="attendance">
-              <span class="metric-title">This shift</span>
-              <div class="metric-number">${state.attendanceMetrics.scannedThisShift || 0}</div>
-              <span class="metric-note">${shiftLabel(state.selectedShift || state.currentShift)}</span>
-            </button>
-            <button type="button" class="metric-card metric-card-button metric-card-alert" data-nav-view="attendance">
-              <span class="metric-title">Still out</span>
-              <div class="metric-number">${state.attendanceMetrics.pendingThisShift || (state.attendancePending || []).length}</div>
-              <span class="metric-note">Needs a scan</span>
-            </button>
-            <button type="button" class="metric-card metric-card-button" data-nav-view="attendance">
-              <span class="metric-title">Today</span>
-              <div class="metric-number">${state.attendanceMetrics.checkedInToday || 0}</div>
-              <span class="metric-note">Total records</span>
-            </button>
-          </div>
-
-          <!-- Two Column Operational Layout -->
-          <div class="console-dashboard-grid">
-            <!-- Left Column: Ongoing Watch Areas -->
-            <div>
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
-                <h3 style="font-size: 17px; font-weight: 800; color: #18181b;">Active Campus Watch Sectors</h3>
-                <span style="font-size: 12.5px; font-weight: 600; color: #71717a;">4 Checkpoints Active</span>
-              </div>
-
-              <div class="areas-2x2-grid">
-                ${state.areas.map(area => `
-                  <div class="area-patrol-card">
-                    <div>
-                      <span class="area-date-tag">${area.date} • ${area.sector}</span>
-                      <h4 class="area-title-text">${area.title}</h4>
-                      <p class="area-sub-text">${area.subtitle}</p>
-                      <div style="font-size: 12px; margin-top: 8px; color: #52525b;">Assigned: <strong>${area.assignedUnit}</strong></div>
-                    </div>
-
-                    <div class="area-progress-wrapper">
-                      <div class="area-progress-bar-bg">
-                        <div class="area-progress-bar-fill" style="width: ${area.progress}%;"></div>
-                      </div>
-                      <div class="area-progress-info">
-                        <span>Shift Coverage</span>
-                        <span>${area.progress}%</span>
-                      </div>
-                    </div>
-                  </div>
-                `).join('')}
-              </div>
-            </div>
-
-            <!-- Right Column: Operational Tasks Checklist -->
-            <div>
-              <div class="tasks-card-container">
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
-                  <h3 style="font-size: 16px; font-weight: 800; color: #18181b;">Shift Protocols</h3>
-                  <span style="font-size: 12.5px; font-weight: 600; color: #71717a;">
-                    ${state.tasks.filter(t => t.done).length}/${state.tasks.length} Completed
-                  </span>
-                </div>
-
-                <div class="tasks-list-scroll">
-                  ${state.tasks.map(task => `
-                    <div class="task-item-card ${task.done ? 'done' : ''}">
-                      <input type="checkbox" class="task-checkbox-custom" data-task-id="${task.id}" ${task.done ? 'checked' : ''} />
-                      <div style="flex: 1;">
-                        <div class="task-title-text">${task.title}</div>
-                        <div class="task-meta-row">
-                          <span class="task-due-tag">${task.due}</span>
-                          ${task.isUrgent ? '<span class="task-urgent-badge">Urgent</span>' : ''}
-                        </div>
-                      </div>
-                    </div>
-                  `).join('')}
-                </div>
-              </div>
-            </div>
-          </div>
+          ${bodyHtml}
         </main>
       </div>
     `;
