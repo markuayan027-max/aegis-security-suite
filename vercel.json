@@ -7,6 +7,22 @@
       "destination": "/api"
     },
     {
+      "source": "/css/(.*)",
+      "destination": "/css/$1"
+    },
+    {
+      "source": "/js/(.*)",
+      "destination": "/js/$1"
+    },
+    {
+      "source": "/public/css/(.*)",
+      "destination": "/css/$1"
+    },
+    {
+      "source": "/public/js/(.*)",
+      "destination": "/js/$1"
+    },
+    {
       "source": "/public/(.*)",
       "destination": "/$1"
     },

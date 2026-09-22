@@ -102,7 +102,7 @@
     toastMessage: null
   };
 
-  const root = document.getElementById('app-container');
+  let root = document.getElementById('app-container');
 
   function isAdminUser() {
     const role = String(state.userRole || '').toLowerCase();
@@ -2248,9 +2248,18 @@
 
   // ── Application Bootstrap ──
   async function init() {
+    root = document.getElementById('app-container');
+    if (!root) {
+      console.error('[E-Secure] #app-container not found — check index.html');
+      return;
+    }
     await checkLiveDatabase();
     await verifySession();
   }
 
-  init();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 })();
