@@ -1,5 +1,5 @@
 # ─────────────────────────────────────────────────────────────────────────────
-# Created: 2026-09-16 | Purpose: Production 24/7 Cloud Container for Aegis Security Suite
+# Created: 2026-09-16 | Purpose: Production 24/7 Cloud Container for E-Secure 1.0
 # Last verified with: Docker 27.0+ / Node.js 22-alpine
 # Target: Google Cloud Run / Google Cloud SQL (PostgreSQL 16+)
 # ─────────────────────────────────────────────────────────────────────────────
@@ -9,14 +9,14 @@ FROM node:22-alpine AS runner
 WORKDIR /app
 
 # Non-root security user
-RUN addgroup -S aegisgroup && adduser -S aegisuser -G aegisgroup
+RUN addgroup -S E-Securegroup && adduser -S E-Secureuser -G E-Securegroup
 
 # Copy application files
-COPY --chown=aegisuser:aegisgroup package.json server.js index.html style.css app.js offline-dispatch.html ./
-COPY --chown=aegisuser:aegisgroup data ./data
-COPY --chown=aegisuser:aegisgroup src ./src
+COPY --chown=E-Secureuser:E-Securegroup package.json server.js index.html style.css app.js offline-dispatch.html ./
+COPY --chown=E-Secureuser:E-Securegroup data ./data
+COPY --chown=E-Secureuser:E-Securegroup src ./src
 
-USER aegisuser
+USER E-Secureuser
 
 EXPOSE 8080
 ENV PORT=8080

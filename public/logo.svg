@@ -1,20 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40" fill="none">
-  <!-- Aegis Minimalist Sentinel Mark: Geometric Precision Shield & Coordinate Intersection -->
-  <!-- Designed: 2026-09-17 | Non-AI Minimalist Vector Craft -->
-  <rect width="40" height="40" rx="8" fill="#0F172A"/>
-  
-  <!-- Outer Architectural Perimeter Contour -->
-  <path d="M20 7L10 11.5V19.5C10 25.8 14.3 30.5 20 32C25.7 30.5 30 25.8 30 19.5V11.5L20 7Z" 
-        stroke="#F8FAFC" 
-        stroke-width="1.75" 
-        stroke-linecap="round" 
-        stroke-linejoin="round"/>
-
-  <!-- Tactical Grid Axis (Perimeter Coordinate Lines) -->
-  <line x1="20" y1="13" x2="20" y2="26" stroke="#38BDF8" stroke-width="1.5" stroke-linecap="round"/>
-  <line x1="14" y1="18.5" x2="26" y2="18.5" stroke="#38BDF8" stroke-width="1.5" stroke-linecap="round"/>
-
-  <!-- Central Command Focal Aperture -->
-  <circle cx="20" cy="18.5" r="2.25" fill="#0F172A" stroke="#38BDF8" stroke-width="1.5"/>
-  <circle cx="20" cy="18.5" r="0.85" fill="#F8FAFC"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="none">
+  <!-- E-Secure 1.0 Minimalist Vector Mark (No background, pure monochrome) -->
+  <path d="M16 3.2L6 7.6V15.2C6 21.6 10.3 26.8 16 28.5C21.7 26.8 26 21.6 26 15.2V7.6L16 3.2Z" 
+        stroke="#18181B" stroke-width="2.2" stroke-linejoin="round"/>
+  <path d="M12 11.2H20" stroke="#18181B" stroke-width="2" stroke-linecap="round"/>
+  <path d="M12 16H18.5" stroke="#18181B" stroke-width="2" stroke-linecap="round"/>
+  <path d="M12 20.8H20" stroke="#18181B" stroke-width="2" stroke-linecap="round"/>
+  <path d="M12 11.2V20.8" stroke="#18181B" stroke-width="2" stroke-linecap="round"/>
 </svg>

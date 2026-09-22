@@ -1,5 +1,5 @@
 -- ==============================================================================
--- Created: 2026-09-16 | Purpose: Aegis Security Suite Database Schema
+-- Created: 2026-09-16 | Purpose: E-Secure 1.0 Database Schema
 -- Target: Google Cloud SQL (PostgreSQL 16+) / Local Compatible PostgreSQL
 -- Components:
 --   1. Tactical Units & Group Management (Unit Numbering)

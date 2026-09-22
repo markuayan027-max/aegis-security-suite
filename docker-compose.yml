@@ -1,17 +1,17 @@
 # ─────────────────────────────────────────────────────────────────────────────
 # Created: 2026-09-16 | Purpose: Local & Cloud Container Orchestration
 # Last verified with: Docker Compose v2.29+
-# Target: Aegis Security Suite + Cloud SQL PostgreSQL 16
+# Target: E-Secure 1.0 + Cloud SQL PostgreSQL 16
 # ─────────────────────────────────────────────────────────────────────────────
 
 version: '3.8'
 
 services:
-  aegis-app:
+  E-Secure-app:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: aegis-security-suite
+    container_name: E-Secure-security-suite
     restart: always
     ports:
       - "3000:8080"
@@ -26,7 +26,7 @@ services:
   # Local Cloud SQL / PostgreSQL 16 Mock for Offline Field Operations
   postgres-db:
     image: postgres:16-alpine
-    container_name: aegis-cloudsql-db
+    container_name: E-Secure-cloudsql-db
     restart: always
     environment:
       POSTGRES_DB: security_attendance

@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// Aegis Security Suite - Frontend Controller
+// E-Secure 1.0 - Frontend Controller
 // Criminology Campus Security, Cadet Tactical Mesh & 5 W's Multi-Use Dispatch
 // Created: 2026-09-17 | Last verified with: Node.js 20+ ESM Native Backend
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1045,7 +1045,7 @@ window.adminAssignUnit = async function(reportId) {
       }
     }
   } catch (err) {
-    console.warn('[Aegis] Offline fallback for adminAssignUnit:', err.message);
+    console.warn('[E-Secure] Offline fallback for adminAssignUnit:', err.message);
   }
 
   report.assignedUnitId = assignedUnitId;
@@ -1076,7 +1076,7 @@ window.adminUpdateStatus = async function(reportId, newStatus) {
       if (data.report) Object.assign(report, data.report);
     }
   } catch (err) {
-    console.warn('[Aegis] Offline fallback for adminUpdateStatus:', err.message);
+    console.warn('[E-Secure] Offline fallback for adminUpdateStatus:', err.message);
   }
 
   report.status = newStatus;
@@ -1110,7 +1110,7 @@ window.updateGovDossierPreview = function() {
   const dossierText = `══════════════════════════════════════════════════════════════════
 TACTICAL DISPATCH DOSSIER - GOVERNMENT RESCUE ESCALATION
 ESCALATION TARGET: ${bureau}
-TRANSMITTED: ${now} | DISPATCH DESK: AEGIS SECURITY SUITE
+TRANSMITTED: ${now} | DISPATCH DESK: E-Secure 1.0
 ══════════════════════════════════════════════════════════════════
 INCIDENT REFERENCE: ${report.referenceCode}
 CATEGORY: ${report.category} | URGENCY: ${report.urgency}
@@ -1613,7 +1613,7 @@ window.triggerAutoBalance = async function() {
       return;
     }
   } catch (err) {
-    console.warn('[Aegis] Backend auto-balance offline, computing locally:', err.message);
+    console.warn('[E-Secure] Backend auto-balance offline, computing locally:', err.message);
   }
 
   // Local fallback
@@ -1665,7 +1665,7 @@ window.reassignMember = async function(memberId) {
         if (data.units) state.tacticalUnits = data.units;
       }
     } catch (e) {
-      console.warn('[Aegis] Member assignment offline fallback');
+      console.warn('[E-Secure] Member assignment offline fallback');
     }
     member.assignedUnitId = targetUnit.id;
     renderUnits();
@@ -1858,7 +1858,7 @@ window.handleCreateEvent = async function(e) {
       }
     }
   } catch (err) {
-    console.warn('[Aegis] Create event offline fallback:', err.message);
+    console.warn('[E-Secure] Create event offline fallback:', err.message);
   }
 
   const eventCode = `EVT-${new Date().getFullYear()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
@@ -1979,7 +1979,7 @@ async function loadEvents() {
       }
     }
   } catch (e) {
-    console.warn('[Aegis] Events API offline, using cached state:', e.message);
+    console.warn('[E-Secure] Events API offline, using cached state:', e.message);
   }
 }
 
@@ -1997,7 +1997,7 @@ async function loadUnits() {
       }
     }
   } catch (e) {
-    console.warn('[Aegis] Units API offline, using cached state:', e.message);
+    console.warn('[E-Secure] Units API offline, using cached state:', e.message);
   }
 }
 
@@ -2014,7 +2014,7 @@ async function loadAdminReports() {
       }
     }
   } catch (e) {
-    console.warn('[Aegis] Reports API offline, using cached state:', e.message);
+    console.warn('[E-Secure] Reports API offline, using cached state:', e.message);
   }
 }
 
@@ -2032,7 +2032,7 @@ async function loadAttendance() {
       }
     }
   } catch (e) {
-    console.warn('[Aegis] Attendance API offline, using cached state:', e.message);
+    console.warn('[E-Secure] Attendance API offline, using cached state:', e.message);
   }
 }
 

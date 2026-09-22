@@ -3,22 +3,22 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
-    <title>Aegis Security Suite | Incident Command &amp; Tactical Roster</title>
-    <meta name="description" content="Aegis Security Suite — Criminology campus multi-use emergency response, cadet tactical mesh, and 5 W's incident reporting system." />
+    <title>E-Secure 1.0 | Incident Command &amp; Tactical Roster</title>
+    <meta name="description" content="E-Secure 1.0 — Criminology campus multi-use emergency response, cadet tactical mesh, and 5 W's incident reporting system." />
     <meta name="robots" content="index, follow" />
-    <meta property="og:title" content="Aegis Security Suite" />
+    <meta property="og:title" content="E-Secure 1.0" />
     <meta property="og:description" content="Tactical Cadet Mesh. 5 W's Incident Reporting. Government Bureau Escalation." />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Aegis Security Suite" />
+    <meta name="twitter:title" content="E-Secure 1.0" />
     <meta name="twitter:description" content="Criminology campus security, emergency dispatch, and rescue operations platform." />
     <link rel="icon" type="image/svg+xml" href="/public/logo.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
-    <!-- Aegis API Bridge: wires Replit UI to Node.js backend REST API -->
-    <script src="/public/aegis-api-bridge.js"></script>
+    <!-- E-Secure API Bridge: wires Replit UI to Node.js backend REST API -->
+    <script src="/public/E-Secure-api-bridge.js"></script>
 
     <!-- Replit React UI (compiled bundle) -->
     <script type="module" crossorigin src="/assets/index-BPijExCi.js"></script>
@@ -26,7 +26,7 @@
 
     <style>
       /* Backend data enhancement banner */
-      #aegis-bridge-banner {
+      #E-Secure-bridge-banner {
         position: fixed;
         bottom: 80px;
         right: 16px;
@@ -43,14 +43,14 @@
         max-width: 260px;
         line-height: 1.4;
       }
-      #aegis-bridge-banner.visible {
+      #E-Secure-bridge-banner.visible {
         opacity: 1;
       }
-      #aegis-bridge-banner strong {
+      #E-Secure-bridge-banner strong {
         color: #10b981;
       }
 
-      #aegis-matrix-switch {
+      #E-Secure-matrix-switch {
         position: fixed;
         top: 12px;
         right: 16px;
@@ -70,7 +70,7 @@
         z-index: 9999;
         transition: all 0.2s ease;
       }
-      #aegis-matrix-switch:hover {
+      #E-Secure-matrix-switch:hover {
         background: #1e293b;
         color: #ffffff;
         border-color: #38bdf8;
@@ -83,26 +83,26 @@
     <div id="root"></div>
 
     <!-- Quick Switch to Tactical Matrix -->
-    <a href="/" id="aegis-matrix-switch" title="Switch to Aegis Tactical Command Matrix">
+    <a href="/" id="E-Secure-matrix-switch" title="Switch to E-Secure Tactical Command Matrix">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
       <span>Tactical Matrix</span>
     </a>
 
     <!-- Bridge status banner (briefly shown after load) -->
-    <div id="aegis-bridge-banner">
-      <strong>Aegis Backend Connected</strong><br />
+    <div id="E-Secure-bridge-banner">
+      <strong>E-Secure Backend Connected</strong><br />
       Live data from Node.js API<br />
-      Call <code>window.AegisAPI.*</code> in console
+      Call <code>window.E-SecureAPI.*</code> in console
     </div>
 
     <script>
       // Show banner briefly to confirm backend wiring
-      window.addEventListener('aegis:hotlines', function (e) {
-        const banner = document.getElementById('aegis-bridge-banner');
+      window.addEventListener('E-Secure:hotlines', function (e) {
+        const banner = document.getElementById('E-Secure-bridge-banner');
         if (!banner) return;
         banner.innerHTML = '<strong>Backend Live</strong><br>' +
           e.detail.length + ' hotlines &bull; Cadet mesh loaded<br>' +
-          '<span style="color:#64748b">window.AegisAPI.* ready</span>';
+          '<span style="color:#64748b">window.E-SecureAPI.* ready</span>';
         banner.classList.add('visible');
         setTimeout(() => banner.classList.remove('visible'), 5000);
       });

@@ -94,35 +94,7 @@ const defaultState = {
       displayName: "Commander Inspector Ramirez"
     }
   ],
-  pendingRegistrations: [
-    {
-      id: "req-101",
-      name: "Tyler Garcia",
-      email: "t.garcia@campus.edu",
-      requestedRole: "cadet",
-      preferredStation: "Main Gate Entrance",
-      date: "Today, 2:10 PM",
-      status: "PENDING"
-    },
-    {
-      id: "req-102",
-      name: "Maria Santos",
-      email: "m.santos@campus.edu",
-      requestedRole: "representative",
-      preferredStation: "Science Complex",
-      date: "Today, 1:45 PM",
-      status: "PENDING"
-    },
-    {
-      id: "req-103",
-      name: "Joshua Lim",
-      email: "j.lim@campus.edu",
-      requestedRole: "cadet",
-      preferredStation: "Quadrangle Walkway",
-      date: "Today, 11:30 AM",
-      status: "PENDING"
-    }
-  ],
+  pendingRegistrations: [],
   events: [
     {
       id: "evt-101",
@@ -158,44 +130,7 @@ const defaultState = {
       mandatoryShifts: ["AM_IN", "AM_OUT", "PM_IN", "PM_OUT"]
     }
   ],
-  studentCompliance: [
-    {
-      studentId: "m-101",
-      eventId: "evt-101",
-      amIn: "07:42 AM",
-      amOut: "11:58 AM",
-      pmIn: "01:15 PM",
-      pmOut: null,
-      status: "IN_PROGRESS"
-    },
-    {
-      studentId: "m-102",
-      eventId: "evt-101",
-      amIn: "07:55 AM",
-      amOut: "12:02 PM",
-      pmIn: "01:28 PM",
-      pmOut: "05:32 PM",
-      status: "COMPLIANT"
-    },
-    {
-      studentId: "m-103",
-      eventId: "evt-101",
-      amIn: "08:18 AM",
-      amOut: null,
-      pmIn: null,
-      pmOut: null,
-      status: "LATE"
-    },
-    {
-      studentId: "m-104",
-      eventId: "evt-101",
-      amIn: null,
-      amOut: null,
-      pmIn: null,
-      pmOut: null,
-      status: "ABSENT"
-    }
-  ],
+  studentCompliance: [],
   tacticalUnits: [
     {
       id: "u-101",
@@ -4084,67 +4019,9 @@ const defaultState = {
       dutyStatus: "STANDBY"
     }
   ],
-  attendanceLogs: [
-    {
-      id: "att-001",
-      memberId: "m-1",
-      displayName: "Officer Marcus Vance",
-      identifierCode: "CADET-7701",
-      eventType: "CHECK_IN",
-      verificationMethod: "EDGE_VECTOR",
-      verificationLatencyMs: 142,
-      terminalCode: "KIOSK-GATE-NORTH",
-      loggedAt: new Date(Date.now() - 3600000).toISOString()
-    },
-    {
-      id: "att-002",
-      memberId: "m-2",
-      displayName: "Cadet Elena Rostova",
-      identifierCode: "CADET-7702",
-      eventType: "CHECK_IN",
-      verificationMethod: "ENCRYPTED_BADGE",
-      verificationLatencyMs: 98,
-      terminalCode: "KIOSK-GATE-NORTH",
-      loggedAt: new Date(Date.now() - 3400000).toISOString()
-    }
-  ],
+  attendanceLogs: [],
   // Anonymous Reports / Concerns (Referenced from POD-AI Concern model)
-  anonymousReports: [
-    {
-      id: "rep-001",
-      referenceCode: "REF-9A4B2C",
-      category: "EMERGENCY_RESCUE",
-      urgency: "CRITICAL",
-      message: "Scaffolding collapse near East Bleachers. Civilian trapped under debris, needs immediate extrication team!",
-      locationHint: "East Bleachers, Sector 2",
-      isAnonymous: true,
-      status: "DISPATCHED",
-      assignedUnitId: "u-102",
-      adminNotes: "Dispatched Bravo Medical & Rescue at 06:15. Extrication unit en route.",
-      resolutionDetails: "Unit 2 deployed with hydraulic spreaders and EMT kit.",
-      respondedBy: "Admin / Dispatch Commander",
-      respondedAt: new Date(Date.now() - 900000).toISOString(),
-      createdAt: new Date(Date.now() - 1200000).toISOString(),
-      updatedAt: new Date(Date.now() - 900000).toISOString()
-    },
-    {
-      id: "rep-002",
-      referenceCode: "REF-4K8M1P",
-      category: "SUSPICIOUS_PERSON",
-      urgency: "MEDIUM",
-      message: "Unattended black duffel bag spotted behind Gate 4 transformer box.",
-      locationHint: "Gate 4, Sector 1",
-      isAnonymous: true,
-      status: "OPEN",
-      assignedUnitId: null,
-      adminNotes: null,
-      resolutionDetails: null,
-      respondedBy: null,
-      respondedAt: null,
-      createdAt: new Date(Date.now() - 400000).toISOString(),
-      updatedAt: new Date(Date.now() - 400000).toISOString()
-    }
-  ]
+  anonymousReports: []
 };
 
 // State Persistence Helper
@@ -4181,9 +4058,33 @@ for (const m of (state.members || [])) {
     else m.yearLevel = m.memberType === 'STUDENT' ? '3RD_YEAR' : 'OFFICER';
   }
 }
+// ── Session & Cryptographic Token Management ────────────────────────────────
+// Declared here so the startup session-restore block below can reference it
+export const activeSessions = new Map();
+
+// Ensure sessions map exists in state
+if (!state.sessions || typeof state.sessions !== 'object') state.sessions = {};
+// Prune expired sessions on startup and reload into activeSessions Map
+{
+  const now = Date.now();
+  for (const [token, sess] of Object.entries(state.sessions)) {
+    if (sess.expiresAt && sess.expiresAt > now) {
+      activeSessions.set(token, sess);
+    } else {
+      delete state.sessions[token];
+    }
+  }
+}
 
 function persistState() {
   try {
+    // Sync active in-memory sessions into state before writing
+    state.sessions = {};
+    for (const [token, sess] of activeSessions.entries()) {
+      if (sess.expiresAt > Date.now()) {
+        state.sessions[token] = sess;
+      }
+    }
     fs.writeFileSync(DATA_FILE, JSON.stringify(state, null, 2), 'utf8');
   } catch (err) {
     console.error("Failed to persist state:", err.message);
@@ -4372,9 +4273,6 @@ export function resolveUnifiedLogin(stores, identifier, passkey) {
   return null;
 }
 
-// ── Session & Cryptographic Token Management ────────────────────────────────
-export const activeSessions = new Map();
-
 export function createSession(user) {
   const token = 'esecure_sec_' + crypto.randomBytes(24).toString('hex');
   const sessionData = {
@@ -4389,9 +4287,11 @@ export function createSession(user) {
       identifierCode: user.identifierCode || null
     },
     createdAt: Date.now(),
-    expiresAt: Date.now() + (12 * 60 * 60 * 1000) // 12 hours
+    expiresAt: Date.now() + (72 * 60 * 60 * 1000) // 72 hours — survives restarts
   };
   activeSessions.set(token, sessionData);
+  // Immediately persist so the session survives server restarts
+  persistState();
   return sessionData;
 }
 
@@ -4415,7 +4315,9 @@ export function getSessionFromRequest(req) {
 }
 
 export function revokeSession(token) {
-  return activeSessions.delete(token);
+  const deleted = activeSessions.delete(token);
+  if (deleted) persistState();
+  return deleted;
 }
 
 // Strict Admin-Only Attendance Access Guard (full student compliance PII)
@@ -4528,11 +4430,16 @@ export function buildAttendanceBoard(appState, shiftType) {
       dutyStatus: m.dutyStatus || 'STANDBY',
       roleTitle: m.roleTitle || 'Personnel',
       memberType: m.memberType || 'STUDENT',
+      lastRecordedDate: memberLogs[0]?.loggedDate || (memberLogs[0]?.loggedAt ? memberLogs[0].loggedAt.slice(0, 10) : null),
       shifts: {
         amIn: compliance?.amIn || (amInLog ? new Date(amInLog.loggedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : null),
         amOut: compliance?.amOut || (amOutLog ? new Date(amOutLog.loggedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : null),
         pmIn: compliance?.pmIn || (pmInLog ? new Date(pmInLog.loggedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : null),
-        pmOut: compliance?.pmOut || (pmOutLog ? new Date(pmOutLog.loggedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : null)
+        pmOut: compliance?.pmOut || (pmOutLog ? new Date(pmOutLog.loggedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : null),
+        amInDate: amInLog?.loggedDate || (amInLog?.loggedAt ? amInLog.loggedAt.slice(0, 10) : null),
+        amOutDate: amOutLog?.loggedDate || (amOutLog?.loggedAt ? amOutLog.loggedAt.slice(0, 10) : null),
+        pmInDate: pmInLog?.loggedDate || (pmInLog?.loggedAt ? pmInLog.loggedAt.slice(0, 10) : null),
+        pmOutDate: pmOutLog?.loggedDate || (pmOutLog?.loggedAt ? pmOutLog.loggedAt.slice(0, 10) : null)
       },
       hasScannedCurrentShift: scannedIds.has(m.id),
       isOverride: memberLogs.some(l => l.isOverride),
@@ -5126,7 +5033,14 @@ async function requestHandler(req, res) {
       })),
       members: board.members,
       metrics: board.metrics,
-      monitor: isAdmin
+      monitor: isAdmin,
+      events: (state.events || []).map(e => ({
+        id: e.id,
+        title: e.title,
+        eventCode: e.eventCode,
+        date: e.date
+      })),
+      activeEventId: state.activeEventId || (state.events && state.events[0]?.id) || null
     }));
     return;
   }
@@ -5181,22 +5095,31 @@ async function requestHandler(req, res) {
 
       member.dutyStatus = eventType === 'CHECK_IN' ? 'ON_DUTY' : 'OFF_DUTY';
 
-      const timeDisplay = data.customTime || new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+      const now = new Date();
+      const timeDisplay = data.customTime || now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+      const loggedDate = now.toISOString().split('T')[0]; // YYYY-MM-DD
+      const activeEvent = state.events.find(e => e.id === (data.eventId || state.activeEventId));
 
       const logEntry = {
         id: `att-${Date.now()}`,
         memberId: member.id,
         displayName: member.displayName,
         identifierCode: member.identifierCode,
+        sectionName: member.sectionName || 'General',
+        yearLevel: member.yearLevel || 'UNKNOWN',
+        dutyStation: member.dutyStation || 'Unassigned',
         shiftType,
         eventType,
+        eventId: data.eventId || state.activeEventId,
+        eventTitle: activeEvent?.title || 'Campus Security Event',
+        loggedDate,          // YYYY-MM-DD — for date-based filtering
+        loggedAt: now.toISOString(),
         verificationMethod: isOverride ? 'MANUAL_OVERRIDE' : (data.verificationMethod || 'MANUAL_OFFICER_DESK'),
         verificationLatencyMs: isOverride ? 0 : (data.verificationLatencyMs || Math.floor(Math.random() * 80 + 70)),
         terminalCode: data.terminalCode || (isOverride ? 'OFFICER-OVERRIDE-DESK' : 'KIOSK-MAIN-SEC'),
         recordedBy: officerDisplayName,
         isOverride: isOverride,
-        overrideReason: overrideReason,
-        loggedAt: new Date().toISOString()
+        overrideReason: overrideReason
       };
 
       if (existingIndex !== -1 && isOverride) {
@@ -5616,6 +5539,95 @@ async function requestHandler(req, res) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: err.message }));
     }
+    return;
+  }
+
+  // ── Attendance Excel/CSV Export (ADMIN ONLY) ─────────────────────────────
+  // GET /api/attendance/export?eventId=evt-101&date=2026-09-22&month=9&year=2026
+  if (method === 'GET' && pathname === '/api/attendance/export') {
+    const session = getSessionFromRequest(req);
+    const legacyRole = (req.headers['x-user-role'] || urlObj.searchParams.get('role') || '').toUpperCase();
+    const isAdmin = (session && (session.user.role === 'SUPER_ADMIN' || session.user.role === 'ADMIN')) || legacyRole === 'ADMIN';
+    if (!isAdmin) {
+      res.writeHead(403, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'FORBIDDEN: Only admins may export attendance reports.' }));
+      return;
+    }
+
+    const filterEventId = urlObj.searchParams.get('eventId') || null;
+    const filterDate    = urlObj.searchParams.get('date') || null;   // YYYY-MM-DD
+    const filterMonth   = urlObj.searchParams.get('month') || null;  // 1-12
+    const filterYear    = urlObj.searchParams.get('year') || null;   // YYYY
+
+    // Collect logs
+    let logs = state.attendanceLogs || [];
+
+    if (filterEventId)   logs = logs.filter(l => (l.eventId || state.activeEventId) === filterEventId);
+    if (filterDate)      logs = logs.filter(l => (l.loggedDate || (l.loggedAt || '').slice(0, 10)) === filterDate);
+    if (filterMonth)     logs = logs.filter(l => {
+      const d = new Date(l.loggedAt || l.loggedDate || '');
+      return !isNaN(d) && (d.getMonth() + 1) === Number(filterMonth);
+    });
+    if (filterYear)      logs = logs.filter(l => {
+      const d = new Date(l.loggedAt || l.loggedDate || '');
+      return !isNaN(d) && d.getFullYear() === Number(filterYear);
+    });
+
+    // Build member lookup map for enrichment
+    const memberMap = {};
+    for (const m of (state.members || [])) memberMap[m.id] = m;
+
+    // Build event lookup
+    const eventMap = {};
+    for (const e of (state.events || [])) eventMap[e.id] = e;
+
+    // CSV header
+    const csvRows = [];
+    csvRows.push([
+      'Log ID', 'Date', 'Time', 'Cadet / Officer Name', 'Identifier Code',
+      'Student ID', 'Section', 'Year Level', 'Duty Station', 'Shift',
+      'Event', 'Event Code', 'Event Date', 'Action', 'Verification',
+      'Terminal', 'Recorded By', 'Override', 'Override Reason'
+    ].map(h => `"${h}"`).join(','));
+
+    for (const log of logs) {
+      const member = memberMap[log.memberId] || {};
+      const event  = eventMap[log.eventId || state.activeEventId] || {};
+      const logDate = log.loggedDate || (log.loggedAt ? log.loggedAt.slice(0, 10) : '');
+      const logTime = log.loggedAt  ? new Date(log.loggedAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : '';
+      const row = [
+        log.id || '',
+        logDate,
+        logTime,
+        log.displayName || member.displayName || '',
+        log.identifierCode || member.identifierCode || '',
+        member.studentIdNumber || '',
+        log.sectionName || member.sectionName || '',
+        log.yearLevel || member.yearLevel || '',
+        log.dutyStation || member.dutyStation || '',
+        log.shiftType || '',
+        log.eventTitle || event.title || '',
+        event.eventCode || '',
+        event.date || '',
+        log.eventType || '',
+        log.verificationMethod || '',
+        log.terminalCode || '',
+        log.recordedBy || '',
+        log.isOverride ? 'YES' : 'NO',
+        log.overrideReason || ''
+      ].map(v => `"${String(v).replace(/"/g, '""')}"`).join(',');
+      csvRows.push(row);
+    }
+
+    const csvContent = csvRows.join('\r\n');
+    const filename = `esecure-attendance-${filterDate || filterMonth ? `${filterYear || ''}${filterMonth ? `-${String(filterMonth).padStart(2,'0')}` : ''}${filterDate ? `-${filterDate.slice(8)}` : ''}` : new Date().toISOString().slice(0,10)}.csv`;
+
+    res.writeHead(200, {
+      'Content-Type': 'text/csv; charset=utf-8',
+      'Content-Disposition': `attachment; filename="${filename}"`,
+      'Cache-Control': 'no-store'
+    });
+    res.end('\uFEFF' + csvContent); // BOM for Excel UTF-8 compatibility
     return;
   }
 

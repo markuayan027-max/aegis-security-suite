@@ -1,6 +1,6 @@
 # ─────────────────────────────────────────────────────────────────────────────
 # Created: 2026-09-17 | Purpose: Git version control ignore configuration
-# Last verified with: Git 2.40+ | Aegis Security Suite v2.1
+# Last verified with: Git 2.40+ | E-Secure 1.0 v2.1
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Dependencies
@@ -17,3 +17,5 @@ Thumbs.db
 # Temp / Scratch
 scratch/
 .system_generated/
+
+.vercel

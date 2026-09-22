@@ -9,16 +9,19 @@
   'use strict';
 
   // ── Application State ──
+  const savedToken = localStorage.getItem('esecure_sec_token') || sessionStorage.getItem('esecure_sec_token') || null;
+  const savedView = localStorage.getItem('esecure_current_view') || 'home';
+
   const state = {
-    view: 'home',               // 'home' | 'dashboard' | 'attendance' | 'approvals' | 'auth'
-    isAuthenticated: false,
-    authToken: sessionStorage.getItem('esecure_sec_token') || null,
+    view: savedToken && savedView !== 'auth' ? savedView : 'home',
+    isAuthenticated: Boolean(savedToken),
+    authToken: savedToken,
     activeUser: null,           // Populated ONLY upon valid authenticated session
     userRole: 'guest',          // 'guest' | 'admin' | 'cadet' | 'representative'
     authMode: 'signin',         // 'signin' | 'signup'
     authError: null,
     authLoading: false,
-    authDraftIdentifier: sessionStorage.getItem('esecure_remember_id') || '',
+    authDraftIdentifier: localStorage.getItem('esecure_remember_id') || sessionStorage.getItem('esecure_remember_id') || '',
 
     // Database & System Telemetry
     databaseStatus: {
@@ -65,6 +68,20 @@
       error: null
     },
 
+    // Attendance Excel/CSV Export State
+    events: [],
+    exportModal: {
+      isOpen: false,
+      eventId: 'ALL',
+      filterType: 'ALL', // 'ALL' | 'DAY' | 'MONTH_YEAR'
+      date: new Date().toISOString().slice(0, 10),
+      month: String(new Date().getMonth() + 1),
+      year: String(new Date().getFullYear()),
+      loading: false,
+      error: null
+    },
+    sidebarCollapsed: localStorage.getItem('esecure_sidebar_collapsed') === 'true',
+
     // Pending Signups (Admin-only: loaded dynamically from server)
     pendingSignups: [],
 
@@ -93,9 +110,7 @@
       { name: 'Campus Safety Command Desk', phone: 'local 4000', agency: 'On-Campus Command', deskNote: 'Immediate on-site campus response desk' }
     ],
 
-    reports: [
-      { id: 'rep-1', ref: 'ESECURE-9402', issue: 'Perimeter Hazard / Spilled Liquid', location: 'Gate 3 Walkway Area', time: '10 mins ago', status: 'Dispatched' }
-    ],
+    reports: [],
 
     isReportModalOpen: false,
     reportSuccess: false,
@@ -151,6 +166,12 @@
           state.activeUser = data.user;
           state.userRole = data.user.role.toLowerCase();
           await fetchRoleData();
+          const targetView = localStorage.getItem('esecure_current_view');
+          if (targetView && targetView !== 'auth') {
+            state.view = targetView;
+          } else if (state.view === 'home' || state.view === 'auth') {
+            state.view = 'attendance';
+          }
         } else {
           logoutLocally();
         }
@@ -222,12 +243,15 @@
     if (attData.metrics) state.attendanceMetrics = attData.metrics;
     if (Array.isArray(attData.pending)) state.attendancePending = attData.pending;
     if (Array.isArray(attData.members)) state.attendanceMembers = attData.members;
+    if (Array.isArray(attData.events)) state.events = attData.events;
     if (attData.currentShift && !state.selectedShift) state.currentShift = attData.currentShift;
   }
 
   // Clear session state
   function logoutLocally() {
+    localStorage.removeItem('esecure_sec_token');
     sessionStorage.removeItem('esecure_sec_token');
+    localStorage.removeItem('esecure_current_view');
     state.authToken = null;
     state.isAuthenticated = false;
     state.activeUser = null;
@@ -254,8 +278,10 @@
     }
 
     if (remember && identifier) {
+      localStorage.setItem('esecure_remember_id', identifier);
       sessionStorage.setItem('esecure_remember_id', identifier);
     } else {
+      localStorage.removeItem('esecure_remember_id');
       sessionStorage.removeItem('esecure_remember_id');
     }
 
@@ -277,7 +303,9 @@
         state.activeUser = data.user;
         state.userRole = String(data.user.role || '').toLowerCase();
         state.authDraftIdentifier = remember ? identifier : '';
+        localStorage.setItem('esecure_sec_token', data.token);
         sessionStorage.setItem('esecure_sec_token', data.token);
+        localStorage.setItem('esecure_current_view', 'attendance');
 
         await fetchRoleData();
         state.view = 'attendance';
@@ -343,6 +371,9 @@
 
       <!-- Fast Attendance Override Modal -->
       ${state.overrideModal && state.overrideModal.isOpen ? renderAttendanceOverrideModal() : ''}
+
+      <!-- Attendance Excel / CSV Export Modal -->
+      ${state.exportModal && state.exportModal.isOpen ? renderAttendanceExportModal() : ''}
     `;
 
     attachEvents();
@@ -601,7 +632,7 @@
 
         <!-- LEFT: Hero Image -->
         <div class="auth-brand-panel">
-          <img src="/public/assets/auth-hero.jpg" alt="Campus Security" class="auth-hero-img" />
+          <img src="/assets/auth-hero.jpg" alt="Campus Security — Christ the King College" class="auth-hero-img" />
         </div>
 
         <!-- RIGHT: Form Panel -->
@@ -811,6 +842,122 @@
     `;
   }
 
+  function renderAttendanceExportModal() {
+    const modal = state.exportModal;
+    if (!modal || !modal.isOpen) return '';
+    const events = state.events || [];
+    const currentYear = new Date().getFullYear();
+
+    return `
+      <div class="modal-overlay" id="attendance-export-backdrop">
+        <div class="modal-content-card export-modal-card" style="max-width: 520px;">
+          <div class="modal-header-row">
+            <div>
+              <h3 class="modal-title">Export Attendance Report</h3>
+              <p class="modal-subtitle">Generate an official turnout and audit report in Microsoft Excel format (.csv)</p>
+            </div>
+            <button class="modal-close-btn" id="modal-export-close">✕</button>
+          </div>
+
+          <form id="attendance-export-form" style="margin-top: 16px;">
+            <!-- Select Event -->
+            <div class="form-group" style="margin-bottom: 16px;">
+              <label class="form-label" style="font-weight: 700; font-size: 13px; color: #18181b; display: block; margin-bottom: 6px;">
+                Specific Event
+              </label>
+              <select class="form-input" id="export-select-event" style="width: 100%; font-size: 13.5px; padding: 10px 12px;">
+                <option value="ALL" ${modal.eventId === 'ALL' ? 'selected' : ''}>All Events / General Daily Muster</option>
+                ${events.map(e => `
+                  <option value="${escapeAttr(e.id)}" ${modal.eventId === e.id ? 'selected' : ''}>
+                    ${escapeAttr(e.title)} (${escapeAttr(e.eventCode || e.id)}) — ${escapeAttr(e.date || 'Active')}
+                  </option>
+                `).join('')}
+              </select>
+            </div>
+
+            <!-- Filter By Date Type -->
+            <div class="form-group" style="margin-bottom: 16px;">
+              <label class="form-label" style="font-weight: 700; font-size: 13px; color: #18181b; display: block; margin-bottom: 6px;">
+                Date Range Filter
+              </label>
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
+                <button type="button" class="btn-secondary export-filter-mode-btn ${modal.filterType === 'ALL' ? 'active' : ''}" data-filter-type="ALL" style="font-size: 12px; padding: 8px 4px; ${modal.filterType === 'ALL' ? 'background:#18181b;color:#fff;border-color:#18181b;' : ''}">
+                  All Records
+                </button>
+                <button type="button" class="btn-secondary export-filter-mode-btn ${modal.filterType === 'DAY' ? 'active' : ''}" data-filter-type="DAY" style="font-size: 12px; padding: 8px 4px; ${modal.filterType === 'DAY' ? 'background:#18181b;color:#fff;border-color:#18181b;' : ''}">
+                  Specific Day
+                </button>
+                <button type="button" class="btn-secondary export-filter-mode-btn ${modal.filterType === 'MONTH_YEAR' ? 'active' : ''}" data-filter-type="MONTH_YEAR" style="font-size: 12px; padding: 8px 4px; ${modal.filterType === 'MONTH_YEAR' ? 'background:#18181b;color:#fff;border-color:#18181b;' : ''}">
+                  Month & Year
+                </button>
+              </div>
+            </div>
+
+            <!-- Day Selector -->
+            ${modal.filterType === 'DAY' ? `
+              <div class="form-group" style="margin-bottom: 16px;">
+                <label class="form-label" style="font-weight: 700; font-size: 13px; color: #18181b; display: block; margin-bottom: 6px;">
+                  Select Date (Day)
+                </label>
+                <input type="date" class="form-input" id="export-input-date" value="${escapeAttr(modal.date)}" style="width: 100%; font-size: 14px; padding: 10px 12px;" required />
+              </div>
+            ` : ''}
+
+            <!-- Month & Year Selector -->
+            ${modal.filterType === 'MONTH_YEAR' ? `
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+                <div class="form-group">
+                  <label class="form-label" style="font-weight: 700; font-size: 13px; color: #18181b; display: block; margin-bottom: 6px;">
+                    Month
+                  </label>
+                  <select class="form-input" id="export-select-month" style="width: 100%; font-size: 13.5px; padding: 10px 12px;">
+                    ${[
+                      { val: '1', label: '01 - January' },
+                      { val: '2', label: '02 - February' },
+                      { val: '3', label: '03 - March' },
+                      { val: '4', label: '04 - April' },
+                      { val: '5', label: '05 - May' },
+                      { val: '6', label: '06 - June' },
+                      { val: '7', label: '07 - July' },
+                      { val: '8', label: '08 - August' },
+                      { val: '9', label: '09 - September' },
+                      { val: '10', label: '10 - October' },
+                      { val: '11', label: '11 - November' },
+                      { val: '12', label: '12 - December' }
+                    ].map(m => `
+                      <option value="${m.val}" ${String(modal.month) === m.val ? 'selected' : ''}>${m.label}</option>
+                    `).join('')}
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" style="font-weight: 700; font-size: 13px; color: #18181b; display: block; margin-bottom: 6px;">
+                    Year
+                  </label>
+                  <select class="form-input" id="export-select-year" style="width: 100%; font-size: 13.5px; padding: 10px 12px;">
+                    ${[currentYear - 2, currentYear - 1, currentYear, currentYear + 1].map(y => `
+                      <option value="${y}" ${String(modal.year) === String(y) ? 'selected' : ''}>${y}</option>
+                    `).join('')}
+                  </select>
+                </div>
+              </div>
+            ` : ''}
+
+            <div style="background: #f4f4f5; border: 1px solid #e4e4e7; border-radius: 8px; padding: 12px; margin-bottom: 20px; font-size: 12px; color: #52525b; line-height: 1.5;">
+              📊 <strong>Excel-Ready Output:</strong> Produces a UTF-8 BOM CSV compatible with Microsoft Excel, Google Sheets, and Apple Numbers. Contains Date, Time, Cadet Name, Student ID, Section, Year Level, Station, Shift, Event Code & Title, Verification Terminal, and Overrides.
+            </div>
+
+            <div class="modal-footer-row">
+              <button type="button" class="btn-secondary" id="modal-export-cancel">Cancel</button>
+              <button type="submit" class="auth-submit-btn" id="modal-export-submit" ${modal.loading ? 'disabled' : ''}>
+                ${modal.loading ? 'Generating...' : '↓ Download Excel Report (.csv)'}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    `;
+  }
+
   function renderRosterCards(members, activeShift) {
     return `
       <div class="tactical-student-cards-grid">
@@ -837,6 +984,7 @@
                     <span class="badge-level-pill">${escapeAttr((m.yearLevel || '').replace('_', ' '))}</span>
                     <span class="badge-section-pill">${escapeAttr(m.sectionName || 'BS-CRIM')}</span>
                     <span class="badge-id-code mono">${escapeAttr(m.studentIdNumber || m.identifierCode)}</span>
+                    ${m.lastRecordedDate ? `<span class="badge-date-pill mono" style="background:#f4f4f5;border:1px solid #e4e4e7;border-radius:4px;padding:2px 6px;font-size:11px;color:#52525b;font-weight:600;">📅 ${escapeAttr(m.lastRecordedDate)}</span>` : ''}
                   </div>
                   <div class="student-station-text">
                     📍 ${escapeAttr(m.dutyStation || 'General Campus Post')}
@@ -849,18 +997,22 @@
                 <div class="shift-time-chip ${shiftState.amIn ? 'recorded' : ''}">
                   <span class="shift-chip-label">AM IN</span>
                   <span class="shift-chip-time mono">${shiftState.amIn ? escapeAttr(shiftState.amIn) : '—'}</span>
+                  ${shiftState.amInDate ? `<span class="shift-chip-date mono" style="font-size:9px;color:#71717a;display:block;">${escapeAttr(shiftState.amInDate)}</span>` : ''}
                 </div>
                 <div class="shift-time-chip ${shiftState.amOut ? 'recorded' : ''}">
                   <span class="shift-chip-label">AM OUT</span>
                   <span class="shift-chip-time mono">${shiftState.amOut ? escapeAttr(shiftState.amOut) : '—'}</span>
+                  ${shiftState.amOutDate ? `<span class="shift-chip-date mono" style="font-size:9px;color:#71717a;display:block;">${escapeAttr(shiftState.amOutDate)}</span>` : ''}
                 </div>
                 <div class="shift-time-chip ${shiftState.pmIn ? 'recorded' : ''}">
                   <span class="shift-chip-label">PM IN</span>
                   <span class="shift-chip-time mono">${shiftState.pmIn ? escapeAttr(shiftState.pmIn) : '—'}</span>
+                  ${shiftState.pmInDate ? `<span class="shift-chip-date mono" style="font-size:9px;color:#71717a;display:block;">${escapeAttr(shiftState.pmInDate)}</span>` : ''}
                 </div>
                 <div class="shift-time-chip ${shiftState.pmOut ? 'recorded' : ''}">
                   <span class="shift-chip-label">PM OUT</span>
                   <span class="shift-chip-time mono">${shiftState.pmOut ? escapeAttr(shiftState.pmOut) : '—'}</span>
+                  ${shiftState.pmOutDate ? `<span class="shift-chip-date mono" style="font-size:9px;color:#71717a;display:block;">${escapeAttr(shiftState.pmOutDate)}</span>` : ''}
                 </div>
               </div>
 
@@ -928,7 +1080,10 @@
                     <td>
                       <div class="table-member-profile">
                         <span class="status-pulse-dot ${m.dutyStatus === 'ON_DUTY' ? 'active' : ''}"></span>
-                        <strong>${escapeAttr(m.displayName)}</strong>
+                        <div>
+                          <strong>${escapeAttr(m.displayName)}</strong>
+                          ${m.lastRecordedDate ? `<div class="mono" style="font-size:11px;color:#71717a;margin-top:2px;">Date: ${escapeAttr(m.lastRecordedDate)}</div>` : ''}
+                        </div>
                       </div>
                     </td>
                     <td>
@@ -936,10 +1091,18 @@
                       <span class="badge-section-pill">${escapeAttr(m.sectionName || 'BS-CRIM')}</span>
                     </td>
                     <td class="mono">${escapeAttr(m.studentIdNumber || m.identifierCode)}</td>
-                    <td class="mono ${s.amIn ? 'time-recorded' : 'time-empty'}">${s.amIn ? escapeAttr(s.amIn) : '—'}</td>
-                    <td class="mono ${s.amOut ? 'time-recorded' : 'time-empty'}">${s.amOut ? escapeAttr(s.amOut) : '—'}</td>
-                    <td class="mono ${s.pmIn ? 'time-recorded' : 'time-empty'}">${s.pmIn ? escapeAttr(s.pmIn) : '—'}</td>
-                    <td class="mono ${s.pmOut ? 'time-recorded' : 'time-empty'}">${s.pmOut ? escapeAttr(s.pmOut) : '—'}</td>
+                    <td class="mono ${s.amIn ? 'time-recorded' : 'time-empty'}">
+                      ${s.amIn ? `<strong>${escapeAttr(s.amIn)}</strong>${s.amInDate ? `<div style="font-size:10px;color:#71717a;">${escapeAttr(s.amInDate)}</div>` : ''}` : '—'}
+                    </td>
+                    <td class="mono ${s.amOut ? 'time-recorded' : 'time-empty'}">
+                      ${s.amOut ? `<strong>${escapeAttr(s.amOut)}</strong>${s.amOutDate ? `<div style="font-size:10px;color:#71717a;">${escapeAttr(s.amOutDate)}</div>` : ''}` : '—'}
+                    </td>
+                    <td class="mono ${s.pmIn ? 'time-recorded' : 'time-empty'}">
+                      ${s.pmIn ? `<strong>${escapeAttr(s.pmIn)}</strong>${s.pmInDate ? `<div style="font-size:10px;color:#71717a;">${escapeAttr(s.pmInDate)}</div>` : ''}` : '—'}
+                    </td>
+                    <td class="mono ${s.pmOut ? 'time-recorded' : 'time-empty'}">
+                      ${s.pmOut ? `<strong>${escapeAttr(s.pmOut)}</strong>${s.pmOutDate ? `<div style="font-size:10px;color:#71717a;">${escapeAttr(s.pmOutDate)}</div>` : ''}` : '—'}
+                    </td>
                     <td style="text-align: right;">
                       <div class="table-actions-inline">
                         <button type="button" class="btn-micro btn-time-in" data-action="time-in" data-member-id="${m.id}" title="Time In">In</button>
@@ -979,8 +1142,13 @@
                 <span class="recorded-by-tag">By: <strong>${escapeAttr(log.recordedBy || 'Duty Officer')}</strong></span>
               </div>
             </div>
-            <div class="audit-feed-time mono">
-              ${log.loggedAt ? new Date(log.loggedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Now'}
+            <div class="audit-feed-time mono" style="text-align: right; min-width: 90px;">
+              <span class="audit-feed-date" style="display: block; font-size: 11px; font-weight: 600; color: #71717a;">
+                ${log.loggedDate || (log.loggedAt ? new Date(log.loggedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Today')}
+              </span>
+              <span class="audit-feed-hour" style="font-weight: 700; color: #18181b; font-size: 13px;">
+                ${log.loggedAt ? new Date(log.loggedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Now'}
+              </span>
             </div>
           </li>
         `).join('')}
@@ -1066,7 +1234,7 @@
           <div>
             <div class="attendance-header-kicker">
               <span class="live-pulse-dot"></span>
-              <span>LIVE MUSTER DESK • ${shiftLabel(defaultShift)} ACTIVE</span>
+              <span>LIVE MUSTER DESK • ${shiftLabel(defaultShift)} ACTIVE • ${new Date().toLocaleDateString('en-PH', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }).toUpperCase()}</span>
             </div>
             <h1 class="page-main-heading">Attendance Command Desk</h1>
             <p class="page-sub-heading">
@@ -1083,11 +1251,15 @@
               <button type="button" class="shift-toggle-btn ${defaultShift === 'PM_OUT' ? 'active' : ''}" data-shift="PM_OUT">PM Out</button>
             </div>
 
-            <button class="btn-secondary" id="btn-refresh-attendance" title="Refresh Board">
-              ↻ Refresh
-            </button>
+            <div style="display:flex;gap:8px;align-items:center;">
+              ${isAdminUser() ? `<button class="btn-secondary" id="btn-export-attendance" title="Download attendance as Excel/CSV" style="background:#18181b;color:#fff;border-color:#18181b;">↓ Export CSV</button>` : ''}
+              <button class="btn-secondary" id="btn-refresh-attendance" title="Refresh Board">
+                ↻ Refresh
+              </button>
+            </div>
           </div>
         </div>
+
 
         <!-- Admin Real-Time Cohort Turnout Matrix -->
         <div class="content-surface cohort-monitoring-surface">
@@ -1282,120 +1454,240 @@
     `;
   }
 
-  // ── 5. SAFETY CONSOLE (Protected Dashboard) ──
+  // ── 5. SAFETY CONSOLE (Protected Dashboard with Arun Dass Dashboard Sidebar) ──
   function renderDashboard() {
     const user = state.activeUser || { displayName: 'Authorized Officer', roleTitle: 'Safety Personnel', dutyStation: 'Security Desk' };
+    const isCollapsed = Boolean(state.sidebarCollapsed);
+    const pendingCount = (state.pendingSignups || []).length;
+    const onDutyCount = state.attendanceMetrics.onDutyCount || 0;
 
     return `
-      <section class="safety-console-canvas">
-        <div class="console-hero-banner">
+      <div class="dashboard-layout-shell">
+        <!-- Arun Dass Dashboard Sidebar Shell (21st.dev/arunjdass/dashboard-sidebar) -->
+        <aside class="arun-dashboard-sidebar ${isCollapsed ? 'collapsed' : ''}" id="app-dashboard-sidebar">
           <div>
-            <h2 class="console-greeting-title">
-              Good day, ${user.displayName}
-            </h2>
-            <p class="console-greeting-sub">
-              Role: <strong>${user.roleTitle}</strong> • Station: <strong>${user.dutyStation}</strong>
-            </p>
-          </div>
-
-          <div class="console-action-pills">
-            <button class="console-pill-btn primary" data-nav-view="attendance">
-              Open attendance
-            </button>
-            ${isAdminUser() ? `
-              <button class="console-pill-btn secondary" data-nav-view="approvals">
-                Approvals (${state.pendingSignups.length})
-              </button>
-            ` : ''}
-            <button class="console-pill-btn secondary" id="dash-report-btn">
-              Transmit Alert
-            </button>
-          </div>
-        </div>
-
-        <div class="metrics-four-grid console-attendance-strip">
-          <button type="button" class="metric-card metric-card-button" data-nav-view="attendance">
-            <span class="metric-title">On duty</span>
-            <div class="metric-number">${state.attendanceMetrics.onDutyCount || 0}</div>
-            <span class="metric-note">Live check-in count</span>
-          </button>
-          <button type="button" class="metric-card metric-card-button" data-nav-view="attendance">
-            <span class="metric-title">This shift</span>
-            <div class="metric-number">${state.attendanceMetrics.scannedThisShift || 0}</div>
-            <span class="metric-note">${shiftLabel(state.selectedShift || state.currentShift)}</span>
-          </button>
-          <button type="button" class="metric-card metric-card-button metric-card-alert" data-nav-view="attendance">
-            <span class="metric-title">Still out</span>
-            <div class="metric-number">${state.attendanceMetrics.pendingThisShift || (state.attendancePending || []).length}</div>
-            <span class="metric-note">Needs a scan</span>
-          </button>
-          <button type="button" class="metric-card metric-card-button" data-nav-view="attendance">
-            <span class="metric-title">Today</span>
-            <div class="metric-number">${state.attendanceMetrics.checkedInToday || 0}</div>
-            <span class="metric-note">Total records</span>
-          </button>
-        </div>
-
-        <div class="console-dashboard-grid">
-          <!-- Left Column: Ongoing Watch Areas -->
-          <div>
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
-              <h3 style="font-size: 18px; font-weight: 800; color: #18181b;">Active Campus Watch Sectors</h3>
-              <span style="font-size: 13px; font-weight: 600; color: #71717a;">4 Checkpoints Active</span>
-            </div>
-
-            <div class="areas-2x2-grid">
-              ${state.areas.map(area => `
-                <div class="area-patrol-card">
-                  <div>
-                    <span class="area-date-tag">${area.date} • ${area.sector}</span>
-                    <h4 class="area-title-text">${area.title}</h4>
-                    <p class="area-sub-text">${area.subtitle}</p>
-                    <div style="font-size: 12px; margin-top: 8px; color: #52525b;">Assigned: <strong>${area.assignedUnit}</strong></div>
-                  </div>
-
-                  <div class="area-progress-wrapper">
-                    <div class="area-progress-bar-bg">
-                      <div class="area-progress-bar-fill" style="width: ${area.progress}%;"></div>
-                    </div>
-                    <div class="area-progress-info">
-                      <span>Shift Coverage</span>
-                      <span>${area.progress}%</span>
-                    </div>
-                  </div>
+            <!-- Sidebar Header -->
+            <div class="sidebar-header-bar">
+              <div class="sidebar-brand-group">
+                <div class="sidebar-brand-icon">E1</div>
+                <div class="sidebar-brand-info">
+                  <span class="sidebar-app-name">E-SECURE 1.0</span>
+                  <span class="sidebar-app-tag">Campus Safety Suite</span>
                 </div>
-              `).join('')}
+              </div>
+              <button type="button" class="sidebar-collapse-trigger" id="dashboard-sidebar-toggle" title="${isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}">
+                ${isCollapsed ? '▶' : '◀'}
+              </button>
             </div>
-          </div>
 
-          <!-- Right Column: Operational Tasks Checklist -->
-          <div>
-            <div class="tasks-card-container">
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
-                <h3 style="font-size: 16px; font-weight: 800; color: #18181b;">Shift Protocols</h3>
-                <span style="font-size: 12.5px; font-weight: 600; color: #71717a;">
-                  ${state.tasks.filter(t => t.done).length}/${state.tasks.length} Completed
-                </span>
+            <!-- Multi-Tier Navigation -->
+            <div class="sidebar-nav-scroll">
+              <!-- Tier 1: Operations -->
+              <div class="sidebar-tier-group">
+                <div class="sidebar-tier-heading">Operations</div>
+                <button type="button" class="sidebar-menu-btn active" data-nav-view="dashboard" title="Dashboard Console">
+                  <span class="menu-icon">📊</span>
+                  <span class="menu-label">Console Overview</span>
+                </button>
+                <button type="button" class="sidebar-menu-btn" data-nav-view="attendance" title="Attendance Muster Desk">
+                  <span class="menu-icon">📋</span>
+                  <span class="menu-label">Attendance Desk</span>
+                  <span class="menu-badge">${onDutyCount} On Duty</span>
+                </button>
+                ${isAdminUser() ? `
+                  <button type="button" class="sidebar-menu-btn" data-nav-view="approvals" title="Role Approvals">
+                    <span class="menu-icon">🛡️</span>
+                    <span class="menu-label">Role Approvals</span>
+                    ${pendingCount > 0 ? `<span class="menu-badge" style="background:#fee2e2;color:#dc2626;">${pendingCount}</span>` : ''}
+                  </button>
+                ` : ''}
               </div>
 
-              <div class="tasks-list-scroll">
-                ${state.tasks.map(task => `
-                  <div class="task-item-card ${task.done ? 'done' : ''}">
-                    <input type="checkbox" class="task-checkbox-custom" data-task-id="${task.id}" ${task.done ? 'checked' : ''} />
-                    <div style="flex: 1;">
-                      <div class="task-title-text">${task.title}</div>
-                      <div class="task-meta-row">
-                        <span class="task-due-tag">${task.due}</span>
-                        ${task.isUrgent ? '<span class="task-urgent-badge">Urgent</span>' : ''}
+              <!-- Tier 2: Safety & Dispatch -->
+              <div class="sidebar-tier-group">
+                <div class="sidebar-tier-heading">Security & Dispatch</div>
+                <button type="button" class="sidebar-menu-btn" data-nav-link="checkpoints" title="Campus Checkpoints">
+                  <span class="menu-icon">📍</span>
+                  <span class="menu-label">Active Sectors</span>
+                  <span class="menu-badge">4 Active</span>
+                </button>
+                <button type="button" class="sidebar-menu-btn" id="dash-side-alert-btn" title="Transmit Emergency Alert">
+                  <span class="menu-icon">⚡</span>
+                  <span class="menu-label">Emergency Alert</span>
+                </button>
+                <button type="button" class="sidebar-menu-btn" data-nav-link="hotlines" title="Campus Hotlines">
+                  <span class="menu-icon">📞</span>
+                  <span class="menu-label">Direct Hotlines</span>
+                </button>
+              </div>
+
+              <!-- Tier 3: Reports & System -->
+              <div class="sidebar-tier-group">
+                <div class="sidebar-tier-heading">Reports & Data</div>
+                ${isAdminUser() ? `
+                  <button type="button" class="sidebar-menu-btn" id="dash-side-export-btn" title="Export Excel Report">
+                    <span class="menu-icon">📥</span>
+                    <span class="menu-label">Turnout Report (.xlsx)</span>
+                  </button>
+                ` : ''}
+                <div class="sidebar-menu-btn" style="cursor: default; opacity: 0.85;" title="Database: Encrypted Edge Store">
+                  <span class="menu-icon">🔒</span>
+                  <span class="menu-label" style="font-size: 12px; color: #71717a;">Cloud SQL Encrypted</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- User Profile Footer -->
+          <div class="sidebar-profile-card">
+            <div class="sidebar-user-avatar">
+              ${escapeAttr(user.displayName.split(' ').map(n => n[0]).join('').slice(0, 2))}
+            </div>
+            <div class="sidebar-user-meta">
+              <span class="sidebar-user-name">${escapeAttr(user.displayName)}</span>
+              <span class="sidebar-user-role">${escapeAttr(user.roleTitle)}</span>
+            </div>
+            <button type="button" class="sidebar-signout-btn" id="app-side-signout-btn" title="Sign Out">
+              ⏻
+            </button>
+          </div>
+        </aside>
+
+        <!-- Main Workspace Frame -->
+        <main class="dashboard-workspace-frame">
+          <div class="workspace-top-bar">
+            <div class="workspace-breadcrumbs">
+              <span>Campus Safety</span>
+              <span>/</span>
+              <span>Safety Console</span>
+              <span>/</span>
+              <strong>${escapeAttr(user.displayName)}</strong>
+            </div>
+
+            <div class="workspace-header-actions">
+              <span class="kpi-pill kpi-pill-accent" style="font-size: 11.5px;">
+                ● ${shiftLabel(state.selectedShift || state.currentShift)} ACTIVE
+              </span>
+              ${isAdminUser() ? `
+                <button type="button" class="btn-secondary" id="dash-workspace-export-btn" style="background:#18181b;color:#fff;border-color:#18181b;font-size:12.5px;padding:6px 12px;">
+                  ↓ Export Excel Report
+                </button>
+              ` : ''}
+              <button type="button" class="btn-secondary" id="dash-report-btn" style="font-size:12.5px;padding:6px 12px;">
+                Transmit Alert
+              </button>
+            </div>
+          </div>
+
+          <!-- Greeting & Station Banner -->
+          <div class="console-hero-banner" style="margin-bottom: 24px;">
+            <div>
+              <h2 class="console-greeting-title">
+                Good day, ${user.displayName}
+              </h2>
+              <p class="console-greeting-sub">
+                Role: <strong>${user.roleTitle}</strong> • Station: <strong>${user.dutyStation}</strong>
+              </p>
+            </div>
+
+            <div class="console-action-pills">
+              <button class="console-pill-btn primary" data-nav-view="attendance">
+                Open Attendance Desk
+              </button>
+              ${isAdminUser() ? `
+                <button class="console-pill-btn secondary" data-nav-view="approvals">
+                  Approvals (${state.pendingSignups.length})
+                </button>
+              ` : ''}
+            </div>
+          </div>
+
+          <!-- 4 KPI Metrics -->
+          <div class="metrics-four-grid console-attendance-strip" style="margin-bottom: 28px;">
+            <button type="button" class="metric-card metric-card-button" data-nav-view="attendance">
+              <span class="metric-title">On duty</span>
+              <div class="metric-number">${state.attendanceMetrics.onDutyCount || 0}</div>
+              <span class="metric-note">Live check-in count</span>
+            </button>
+            <button type="button" class="metric-card metric-card-button" data-nav-view="attendance">
+              <span class="metric-title">This shift</span>
+              <div class="metric-number">${state.attendanceMetrics.scannedThisShift || 0}</div>
+              <span class="metric-note">${shiftLabel(state.selectedShift || state.currentShift)}</span>
+            </button>
+            <button type="button" class="metric-card metric-card-button metric-card-alert" data-nav-view="attendance">
+              <span class="metric-title">Still out</span>
+              <div class="metric-number">${state.attendanceMetrics.pendingThisShift || (state.attendancePending || []).length}</div>
+              <span class="metric-note">Needs a scan</span>
+            </button>
+            <button type="button" class="metric-card metric-card-button" data-nav-view="attendance">
+              <span class="metric-title">Today</span>
+              <div class="metric-number">${state.attendanceMetrics.checkedInToday || 0}</div>
+              <span class="metric-note">Total records</span>
+            </button>
+          </div>
+
+          <!-- Two Column Operational Layout -->
+          <div class="console-dashboard-grid">
+            <!-- Left Column: Ongoing Watch Areas -->
+            <div>
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+                <h3 style="font-size: 17px; font-weight: 800; color: #18181b;">Active Campus Watch Sectors</h3>
+                <span style="font-size: 12.5px; font-weight: 600; color: #71717a;">4 Checkpoints Active</span>
+              </div>
+
+              <div class="areas-2x2-grid">
+                ${state.areas.map(area => `
+                  <div class="area-patrol-card">
+                    <div>
+                      <span class="area-date-tag">${area.date} • ${area.sector}</span>
+                      <h4 class="area-title-text">${area.title}</h4>
+                      <p class="area-sub-text">${area.subtitle}</p>
+                      <div style="font-size: 12px; margin-top: 8px; color: #52525b;">Assigned: <strong>${area.assignedUnit}</strong></div>
+                    </div>
+
+                    <div class="area-progress-wrapper">
+                      <div class="area-progress-bar-bg">
+                        <div class="area-progress-bar-fill" style="width: ${area.progress}%;"></div>
+                      </div>
+                      <div class="area-progress-info">
+                        <span>Shift Coverage</span>
+                        <span>${area.progress}%</span>
                       </div>
                     </div>
                   </div>
                 `).join('')}
               </div>
             </div>
+
+            <!-- Right Column: Operational Tasks Checklist -->
+            <div>
+              <div class="tasks-card-container">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+                  <h3 style="font-size: 16px; font-weight: 800; color: #18181b;">Shift Protocols</h3>
+                  <span style="font-size: 12.5px; font-weight: 600; color: #71717a;">
+                    ${state.tasks.filter(t => t.done).length}/${state.tasks.length} Completed
+                  </span>
+                </div>
+
+                <div class="tasks-list-scroll">
+                  ${state.tasks.map(task => `
+                    <div class="task-item-card ${task.done ? 'done' : ''}">
+                      <input type="checkbox" class="task-checkbox-custom" data-task-id="${task.id}" ${task.done ? 'checked' : ''} />
+                      <div style="flex: 1;">
+                        <div class="task-title-text">${task.title}</div>
+                        <div class="task-meta-row">
+                          <span class="task-due-tag">${task.due}</span>
+                          ${task.isUrgent ? '<span class="task-urgent-badge">Urgent</span>' : ''}
+                        </div>
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-      </section>
+        </main>
+      </div>
     `;
   }
 
@@ -1514,6 +1806,7 @@
         e.preventDefault();
         const targetView = btn.getAttribute('data-nav-view');
         state.view = targetView;
+        localStorage.setItem('esecure_current_view', targetView);
         state.authError = null;
         render();
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -2229,6 +2522,183 @@
         }
       });
     });
+
+    // ── Arun Dass Dashboard Sidebar Handlers ──
+    const sideToggle = document.getElementById('dashboard-sidebar-toggle');
+    if (sideToggle) {
+      sideToggle.addEventListener('click', () => {
+        state.sidebarCollapsed = !state.sidebarCollapsed;
+        localStorage.setItem('esecure_sidebar_collapsed', state.sidebarCollapsed ? 'true' : 'false');
+        render();
+      });
+    }
+
+    const sideSignoutBtn = document.getElementById('app-side-signout-btn');
+    if (sideSignoutBtn) {
+      sideSignoutBtn.addEventListener('click', async () => {
+        if (state.authToken) {
+          try {
+            await fetch('/api/auth/logout', {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${state.authToken}` }
+            });
+          } catch (err) {}
+        }
+        logoutLocally();
+        showToast('You have been signed out.');
+        render();
+      });
+    }
+
+    const sideAlertBtn = document.getElementById('dash-side-alert-btn');
+    if (sideAlertBtn) {
+      sideAlertBtn.addEventListener('click', () => {
+        state.isReportModalOpen = true;
+        state.reportSuccess = false;
+        render();
+      });
+    }
+
+    // ── Attendance Excel / CSV Export Handlers ──
+    const openExportModal = () => {
+      state.exportModal.isOpen = true;
+      state.exportModal.error = null;
+      render();
+    };
+
+    const btnExportAttendance = document.getElementById('btn-export-attendance');
+    if (btnExportAttendance) btnExportAttendance.addEventListener('click', openExportModal);
+
+    const dashWsExport = document.getElementById('dash-workspace-export-btn');
+    if (dashWsExport) dashWsExport.addEventListener('click', openExportModal);
+
+    const dashSideExport = document.getElementById('dash-side-export-btn');
+    if (dashSideExport) dashSideExport.addEventListener('click', openExportModal);
+
+    const exportCloseBtn = document.getElementById('modal-export-close');
+    if (exportCloseBtn) {
+      exportCloseBtn.addEventListener('click', () => {
+        state.exportModal.isOpen = false;
+        render();
+      });
+    }
+
+    const exportCancelBtn = document.getElementById('modal-export-cancel');
+    if (exportCancelBtn) {
+      exportCancelBtn.addEventListener('click', () => {
+        state.exportModal.isOpen = false;
+        render();
+      });
+    }
+
+    const exportBackdrop = document.getElementById('attendance-export-backdrop');
+    if (exportBackdrop) {
+      exportBackdrop.addEventListener('click', (e) => {
+        if (e.target === exportBackdrop) {
+          state.exportModal.isOpen = false;
+          render();
+        }
+      });
+    }
+
+    document.querySelectorAll('.export-filter-mode-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        state.exportModal.filterType = btn.getAttribute('data-filter-type') || 'ALL';
+        render();
+      });
+    });
+
+    const exportSelectEvent = document.getElementById('export-select-event');
+    if (exportSelectEvent) {
+      exportSelectEvent.addEventListener('change', (e) => {
+        state.exportModal.eventId = e.target.value;
+      });
+    }
+
+    const exportInputDate = document.getElementById('export-input-date');
+    if (exportInputDate) {
+      exportInputDate.addEventListener('change', (e) => {
+        state.exportModal.date = e.target.value;
+      });
+    }
+
+    const exportSelectMonth = document.getElementById('export-select-month');
+    if (exportSelectMonth) {
+      exportSelectMonth.addEventListener('change', (e) => {
+        state.exportModal.month = e.target.value;
+      });
+    }
+
+    const exportSelectYear = document.getElementById('export-select-year');
+    if (exportSelectYear) {
+      exportSelectYear.addEventListener('change', (e) => {
+        state.exportModal.year = e.target.value;
+      });
+    }
+
+    const exportForm = document.getElementById('attendance-export-form');
+    if (exportForm) {
+      exportForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const modal = state.exportModal;
+        modal.loading = true;
+        modal.error = null;
+        render();
+
+        try {
+          const params = new URLSearchParams();
+          const selectedEvent = document.getElementById('export-select-event')?.value || modal.eventId;
+          if (selectedEvent && selectedEvent !== 'ALL') {
+            params.set('eventId', selectedEvent);
+          }
+
+          if (modal.filterType === 'DAY') {
+            const dateVal = document.getElementById('export-input-date')?.value || modal.date;
+            if (dateVal) params.set('date', dateVal);
+          } else if (modal.filterType === 'MONTH_YEAR') {
+            const mVal = document.getElementById('export-select-month')?.value || modal.month;
+            const yVal = document.getElementById('export-select-year')?.value || modal.year;
+            if (mVal) params.set('month', mVal);
+            if (yVal) params.set('year', yVal);
+          }
+
+          const res = await fetch(`/api/attendance/export?${params.toString()}`, {
+            headers: authHeaders()
+          });
+
+          if (!res.ok) {
+            const errData = await res.json().catch(() => ({}));
+            throw new Error(errData.error || `Export failed with status ${res.status}`);
+          }
+
+          const blob = await res.blob();
+          const blobUrl = window.URL.createObjectURL(blob);
+          const downloadAnchor = document.createElement('a');
+          downloadAnchor.href = blobUrl;
+
+          const disposition = res.headers.get('Content-Disposition') || '';
+          let filename = 'esecure_attendance_turnout.csv';
+          const match = disposition.match(/filename="?([^";]+)"?/i);
+          if (match && match[1]) filename = match[1];
+
+          downloadAnchor.download = filename;
+          document.body.appendChild(downloadAnchor);
+          downloadAnchor.click();
+          downloadAnchor.remove();
+          window.URL.revokeObjectURL(blobUrl);
+
+          modal.loading = false;
+          modal.isOpen = false;
+          showToast(`Report downloaded: ${filename}`);
+          render();
+        } catch (err) {
+          modal.loading = false;
+          modal.error = err.message;
+          showToast('Export failed: ' + err.message);
+          render();
+        }
+      });
+    }
 
     // Global Shortcut: '/' to focus fast search in attendance
     if (!window._esecureSlashBound) {

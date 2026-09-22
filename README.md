@@ -1,46 +1,46 @@
-# 🛡️ Aegis Security Suite
+# 🛡️ E-Secure 1.0
 
 > **Criminology Campus Multi-Event Security · Cadet Tactical Mesh · 5 W's Incident Reporting · Rescue Operative Balancing**  
-> **Live Production on Vercel:** [https://aegis-security-suite-nu.vercel.app/](https://aegis-security-suite-nu.vercel.app/)  
-> **Replit React Console:** [https://aegis-security-suite-nu.vercel.app/replit](https://aegis-security-suite-nu.vercel.app/replit)  
+> **Live Production on Vercel:** [https://E-Secure-security-suite-nu.vercel.app/](https://E-Secure-security-suite-nu.vercel.app/)  
+> **Replit React Console:** [https://E-Secure-security-suite-nu.vercel.app/replit](https://E-Secure-security-suite-nu.vercel.app/replit)  
 
 ─────── Created: 2026-09-17 | Production Target: Vercel Serverless + Google Cloud SQL | Status: Operational ───────
 
 ---
 
-## 🏛️ Why "Aegis Security"?
+## 🏛️ Why "E-Secure 1.0"?
 
-In classical Greek mythology, the **Aegis** (*αἰγίς*) was the legendary shield and mantle forged by Hephaestus, carried by **Athena**, goddess of tactical wisdom and strategic justice, and **Zeus**, protector of civilization. 
+In classical Greek mythology, the **E-Secure** (*αἰγίς*) was the legendary shield and mantle forged by Hephaestus, carried by **Athena**, goddess of tactical wisdom and strategic justice, and **Zeus**, protector of civilization. 
 
-Unlike weapons of aggression, the Aegis is the ultimate symbol of **impenetrable sanctuary, ethical vigilance, and proactive defense**.
+Unlike weapons of aggression, the E-Secure is the ultimate symbol of **impenetrable sanctuary, ethical vigilance, and proactive defense**.
 
 ### The Criminology & Public Safety Doctrine
 
-In law enforcement, criminology, and campus security, the name **Aegis** embodies our foundational mission:
+In law enforcement, criminology, and campus security, the name **E-Secure** embodies our foundational mission:
 
 1. **Defense Over Aggression (Sanctuary)**:  
    Security is not merely enforcement; it is creating a safe, trustworthy perimeter where students, faculty, and civilians are shielded from harm and fear.
 2. **Athena's Tactical Wisdom (5 W's Intelligence)**:  
-   In chaotic emergencies, emotional panic leads to errors. Aegis enforces structured 5 W's intelligence (**Where, What, Who, When, Why/How**), transforming ambiguous reports into decisive, factual dispatch dossiers.
+   In chaotic emergencies, emotional panic leads to errors. E-Secure enforces structured 5 W's intelligence (**Where, What, Who, When, Why/How**), transforming ambiguous reports into decisive, factual dispatch dossiers.
 3. **The Unbroken Shield (Cadet Tactical Mesh)**:  
    A shield is only as strong as its interlocked parts. The Cadet Mesh binds student officers, sector radios, and patrol squads into a synchronized grid that functions even in zero-internet offline conditions.
 4. **Duty of Care (Rescue Operative Balancing)**:  
-   Every quadrant on campus deserves equal protection. Through mathematical squad balancing, Aegis guarantees no numbered squad enters the field without certified, high-strength rescue personnel.
+   Every quadrant on campus deserves equal protection. Through mathematical squad balancing, E-Secure guarantees no numbered squad enters the field without certified, high-strength rescue personnel.
 5. **Guardian of Civil Liberties (Privacy-Preserving Reporting)**:  
-   True security protects personal dignity. Aegis provides anonymous reporting with non-reversible reference codes (`REF-XXXXXX`), allowing civilians to speak up without fear of retaliation.
+   True security protects personal dignity. E-Secure provides anonymous reporting with non-reversible reference codes (`REF-XXXXXX`), allowing civilians to speak up without fear of retaliation.
 
 ---
 
 ## 🚀 Dual Console Architecture
 
-Aegis provides two distinct, interoperable operations consoles:
+E-Secure provides two distinct, interoperable operations consoles:
 
 | Console | Production URL | Technology | Focus |
 | :--- | :--- | :--- | :--- |
-| **Tactical Command Matrix** | [`/`](https://aegis-security-suite-nu.vercel.app/) | Vanilla JS (Zero-Dep), Quixotic/Insightlancer UI | Sub-millisecond latency, zero-runtime overhead, high-contrast operational readiness. |
-| **Replit React Suite** | [`/replit`](https://aegis-security-suite-nu.vercel.app/replit) | React 18, Vite, TailwindCSS, Radix UI | Modern component hierarchy, modular panels, rich animations. |
+| **Tactical Command Matrix** | [`/`](https://E-Secure-security-suite-nu.vercel.app/) | Vanilla JS (Zero-Dep), Quixotic/Insightlancer UI | Sub-millisecond latency, zero-runtime overhead, high-contrast operational readiness. |
+| **Replit React Suite** | [`/replit`](https://E-Secure-security-suite-nu.vercel.app/replit) | React 18, Vite, TailwindCSS, Radix UI | Modern component hierarchy, modular panels, rich animations. |
 
-*Both consoles are wired to the same unified REST API via [`public/aegis-api-bridge.js`](public/aegis-api-bridge.js).*
+*Both consoles are wired to the same unified REST API via [`public/E-Secure-api-bridge.js`](public/E-Secure-api-bridge.js).*
 
 ---
 
@@ -115,5 +115,5 @@ All 9 native test suites pass with zero dependencies:
 
 ## 🤝 Cross-AI Interoperability & Handoff Guide
 
-- **RovoDev CLI**: `rovodev run "Audit Aegis API endpoints against http://localhost:3000/api/health"`
+- **RovoDev CLI**: `rovodev run "Audit E-Secure API endpoints against http://localhost:3000/api/health"`
 - **Trae / Cursor / VS Code**: Open root directory; run `node server.js` for backend, edit `public/` for static assets, or `api/` for serverless functions.

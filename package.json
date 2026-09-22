@@ -1,7 +1,7 @@
 {
-  "name": "aegis-security-suite",
+  "name": "e-secure-1-0",
   "version": "1.0.0",
-  "description": "Production-grade, privacy-first security attendance checking and zero-internet offline emergency dispatch grid for criminology squads and civilian marshals.",
+  "description": "E-Secure 1.0 - Production-grade, privacy-first security attendance checking and zero-internet offline emergency dispatch grid for criminology squads and civilian marshals.",
   "main": "server.js",
   "type": "module",
   "scripts": {
@@ -17,6 +17,6 @@
     "zero-knowledge-biometrics",
     "attendance-system"
   ],
-  "author": "Aegis Tactical Engineering",
+  "author": "E-Secure Tactical Engineering",
   "license": "MIT"
 }

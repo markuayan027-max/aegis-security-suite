@@ -1,6 +1,6 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// Created: 2026-09-17 | Purpose: Aegis API Bridge — Replit UI ↔ Node.js Backend
-// Last verified with: Node.js 20+ native backend | Aegis Security Suite v2.1
+// Created: 2026-09-17 | Purpose: E-Secure API Bridge — Replit UI ↔ Node.js Backend
+// Last verified with: Node.js 20+ native backend | E-Secure 1.0 v2.1
 // Compatible with OpenCode plugin: paste this into prompt for handoff
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -17,12 +17,12 @@
   });
 
   // ── Expose on window so React compiled app can call via global hooks ──────
-  window.AegisAPI = {
+  window.E-SecureAPI = {
 
     // ── Set current role (called by role ribbon buttons) ─────────────────
     setRole(role) {
       _role = role;
-      console.log(`[AegisBridge] Role → ${role.toUpperCase()}`);
+      console.log(`[E-SecureBridge] Role → ${role.toUpperCase()}`);
     },
 
     // ── Fetch live emergency hotlines from backend ─────────────────────
@@ -32,7 +32,7 @@
         const d = await r.json();
         return d.hotlines ?? [];
       } catch (e) {
-        console.warn('[AegisBridge] getHotlines failed, using mock:', e.message);
+        console.warn('[E-SecureBridge] getHotlines failed, using mock:', e.message);
         return [];
       }
     },
@@ -44,7 +44,7 @@
         const d = await r.json();
         return d.mesh ?? [];
       } catch (e) {
-        console.warn('[AegisBridge] getCadetMesh failed:', e.message);
+        console.warn('[E-SecureBridge] getCadetMesh failed:', e.message);
         return [];
       }
     },
@@ -56,7 +56,7 @@
         const d = await r.json();
         return d.units ?? [];
       } catch (e) {
-        console.warn('[AegisBridge] getUnits failed:', e.message);
+        console.warn('[E-SecureBridge] getUnits failed:', e.message);
         return [];
       }
     },
@@ -69,10 +69,10 @@
           headers: roleHeader(),
         });
         const d = await r.json();
-        console.log('[AegisBridge] Auto-balance result:', d.message);
+        console.log('[E-SecureBridge] Auto-balance result:', d.message);
         return d;
       } catch (e) {
-        console.warn('[AegisBridge] autoBalance failed:', e.message);
+        console.warn('[E-SecureBridge] autoBalance failed:', e.message);
         return null;
       }
     },
@@ -87,7 +87,7 @@
         });
         return await r.json();
       } catch (e) {
-        console.warn('[AegisBridge] transferMember failed:', e.message);
+        console.warn('[E-SecureBridge] transferMember failed:', e.message);
         return null;
       }
     },
@@ -99,7 +99,7 @@
         const d = await r.json();
         return d.leaders ?? [];
       } catch (e) {
-        console.warn('[AegisBridge] getDeptLeaders failed:', e.message);
+        console.warn('[E-SecureBridge] getDeptLeaders failed:', e.message);
         return [];
       }
     },
@@ -131,13 +131,13 @@
 
         const d = await r.json();
         if (!r.ok) {
-          console.error('[AegisBridge] submitIncident validation error:', d);
+          console.error('[E-SecureBridge] submitIncident validation error:', d);
           return { error: d.error || 'Submission failed', details: d.validationErrors };
         }
-        console.log(`[AegisBridge] Incident filed: ${d.referenceCode}`);
+        console.log(`[E-SecureBridge] Incident filed: ${d.referenceCode}`);
         return { success: true, referenceCode: d.referenceCode, ...d };
       } catch (e) {
-        console.error('[AegisBridge] submitIncident network error:', e.message);
+        console.error('[E-SecureBridge] submitIncident network error:', e.message);
         return { error: e.message };
       }
     },
@@ -149,7 +149,7 @@
         const d = await r.json();
         return d.reports ?? [];
       } catch (e) {
-        console.warn('[AegisBridge] getReports failed:', e.message);
+        console.warn('[E-SecureBridge] getReports failed:', e.message);
         return [];
       }
     },
@@ -165,7 +165,7 @@
         });
         return await r.json();
       } catch (e) {
-        console.warn('[AegisBridge] updateStatus failed:', e.message);
+        console.warn('[E-SecureBridge] updateStatus failed:', e.message);
         return null;
       }
     },
@@ -179,10 +179,10 @@
           body: JSON.stringify({ bureau }),
         });
         const d = await r.json();
-        console.log(`[AegisBridge] Gov dossier staged: ${d.dossierCode}`);
+        console.log(`[E-SecureBridge] Gov dossier staged: ${d.dossierCode}`);
         return d;
       } catch (e) {
-        console.warn('[AegisBridge] escalateGov failed:', e.message);
+        console.warn('[E-SecureBridge] escalateGov failed:', e.message);
         return null;
       }
     },
@@ -194,7 +194,7 @@
         if (r.status === 404) return null;
         return await r.json();
       } catch (e) {
-        console.warn('[AegisBridge] lookupByCode failed:', e.message);
+        console.warn('[E-SecureBridge] lookupByCode failed:', e.message);
         return null;
       }
     },
@@ -206,7 +206,7 @@
         if (r.status === 403) return { forbidden: true };
         return await r.json();
       } catch (e) {
-        console.warn('[AegisBridge] getAttendance failed:', e.message);
+        console.warn('[E-SecureBridge] getAttendance failed:', e.message);
         return null;
       }
     },
@@ -221,7 +221,7 @@
         });
         return await r.json();
       } catch (e) {
-        console.warn('[AegisBridge] scanAttendance failed:', e.message);
+        console.warn('[E-SecureBridge] scanAttendance failed:', e.message);
         return { error: e.message };
       }
     },
@@ -245,32 +245,32 @@
   // This uses a MutationObserver to wait for React root to mount, then
   // enriches the Replit UI with real backend data via console signals.
   const _boot = async () => {
-    console.log('[AegisBridge] Booting Aegis API Bridge v2.1...');
+    console.log('[E-SecureBridge] Booting E-Secure API Bridge v2.1...');
 
     // Load hotlines
-    const hotlines = await window.AegisAPI.getHotlines();
+    const hotlines = await window.E-SecureAPI.getHotlines();
     if (hotlines.length) {
-      console.log(`[AegisBridge] ${hotlines.length} emergency hotlines loaded from backend.`);
+      console.log(`[E-SecureBridge] ${hotlines.length} emergency hotlines loaded from backend.`);
       // Dispatch custom event so React app can optionally listen
-      window.dispatchEvent(new CustomEvent('aegis:hotlines', { detail: hotlines }));
+      window.dispatchEvent(new CustomEvent('E-Secure:hotlines', { detail: hotlines }));
     }
 
     // Load cadet mesh
-    const mesh = await window.AegisAPI.getCadetMesh();
+    const mesh = await window.E-SecureAPI.getCadetMesh();
     if (mesh.length) {
-      console.log(`[AegisBridge] Cadet mesh: ${mesh.length} units loaded from backend.`);
-      window.dispatchEvent(new CustomEvent('aegis:mesh', { detail: mesh }));
+      console.log(`[E-SecureBridge] Cadet mesh: ${mesh.length} units loaded from backend.`);
+      window.dispatchEvent(new CustomEvent('E-Secure:mesh', { detail: mesh }));
     }
 
     // Load reports
-    const reports = await window.AegisAPI.getReports();
+    const reports = await window.E-SecureAPI.getReports();
     if (reports.length) {
-      console.log(`[AegisBridge] ${reports.length} incident reports loaded from backend.`);
-      window.dispatchEvent(new CustomEvent('aegis:reports', { detail: reports }));
+      console.log(`[E-SecureBridge] ${reports.length} incident reports loaded from backend.`);
+      window.dispatchEvent(new CustomEvent('E-Secure:reports', { detail: reports }));
     }
 
-    console.log('[AegisBridge] Ready. Call window.AegisAPI.* to interact with the live backend.');
-    console.log('[AegisBridge] Backend endpoints:', {
+    console.log('[E-SecureBridge] Ready. Call window.E-SecureAPI.* to interact with the live backend.');
+    console.log('[E-SecureBridge] Backend endpoints:', {
       hotlines: `${BASE}/api/hotlines`,
       mesh: `${BASE}/api/cadet-mesh`,
       reports: `${BASE}/api/reports/admin`,
